@@ -124,6 +124,19 @@
 
         return text;
     }
+    public static DateTime ReadDateTime(string prompt)
+    {
+        bool isDateTime = false;
+        DateTime dateTime;
+        do
+        {
+            Console.WriteLine($"{prompt}");
+            string text = Console.ReadLine();
+            isDateTime = DateTime.TryParse(text, out dateTime);
+        } while (!isDateTime);
+        return dateTime;
+
+    }
 
 }
 

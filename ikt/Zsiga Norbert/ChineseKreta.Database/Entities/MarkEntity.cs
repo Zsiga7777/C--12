@@ -11,6 +11,9 @@ public class MarkEntity
     [Range(1,5)]
     public uint Mark { get; set; }
 
+    [Required]
+    public DateTime Date { get; set; }
+
     public uint StudentId { get; set; }
 
     public virtual StudentEntity Student { get; set; }

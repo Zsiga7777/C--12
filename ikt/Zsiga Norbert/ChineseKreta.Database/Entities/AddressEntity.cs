@@ -11,10 +11,9 @@ public class AddressEntity
     [StringLength(60)]
     public string Address { get; set; }
 
-    public uint CityId { get; set; }
+    public uint StreetId { get; set; }
 
-    public virtual CityEntity City { get; set; }
+    public virtual StreetEntity Street { get; set; }
 
-    public uint StudentId { get; set; }
-    public virtual StudentEntity Student { get; set; }
+    public IReadOnlyCollection<StudentEntity> Students{ get; set; }
 }

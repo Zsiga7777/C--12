@@ -1,305 +1,248 @@
-﻿using Custom.Library.ConsoleExtensions;
+﻿using ChineseKreta.Database;
+using ChineseKreta.Database.Entities;
+using Custom.Library.ConsoleExtensions;
 using Feladat;
+using Microsoft.EntityFrameworkCore;
 
 public static class DataService
 {
     #region student
-    public static void AddNewStudents(List<ChineseKreta.Database.Entities.StudentEntity> studentDatas)
+    public static async Task AddNewStudentsAsync(ApplicationDbContext dbContext)
     {
         bool nomore = false;
         do
         {
             Console.Clear();
-            string input = ExtendentConsole.ReadString("Kérem a tanuló nevét vagy a feladat végeztével a 'e' gomb lenyomását: ");
-            if (input.ToLower() == "e") { break; }
-
-            int counter = 0;
-            while (studentDatas.Any(x => x.Name == input))
-            {
-                if (counter == 0)
-                {
-                    counter++;
-                    input = input + $"{counter}";
-                }
-                else
-                {
-                    input = input.Remove(counter);
-                    counter++;
-                    input = input + $"{counter}";
-                }
+            string input =await ConsoleFunctions.ReadStudentNameAsync(dbContext);
+            if (input.ToLower() == "e") 
+            { 
+                break; 
             }
-        
-            studentDatas.Add(new ChineseKreta.Database.Entities.StudentEntity
+
+            uint address = await Menus.SelectNewOrExistingAddressCompleteAsync(dbContext);
+
+            var student = new StudentEntity()
             {
                 Name = input,
-                Class = new ChineseKreta.Database.Entities.ClassEntity
-                { 
-                    Name = ExtendentConsole.ReadString("Kérem a tanuló osztályát: ")
-                },
-                Address = ExtendentConsole.ReadString("Kérem a tanuló lakcímét: "),
-                Subjects =  AddNewSubjects(new Dictionary<string, ICollection<int>>()),
-            });
+                BirthDay = ExtendentConsole.ReadDateTime("Kérem a születési dátumát: "),
+                MothersName = ExtendentConsole.ReadString("Kérem az anyja nevét: "),
+                AddressId = address
+            };
+            await dbContext.Students.AddAsync(student);
+            await dbContext.SaveChangesAsync();
         }while(!nomore);
-
-        return studentDatas;
     }
 
     
 
-    public static List<JoinedStudentData> ModifyStudentsData(List<JoinedStudentData> joinedStudentDatas, int indexOfStudent)
+    public static async Task ModifyStudentsDataAsync(ApplicationDbContext dbContext)
     {
+        uint studentNeedsModifyId = await ConsoleFunctions.GetStudentIdAsync(dbContext);
+        if (studentNeedsModifyId == 0)
+        {
+            return;
+        }
         do
         {
             Console.Clear();
 
-            int modificationType = Menus.ReusableMenu(["Név módosítás", "Osztály módosítás", "Lakcím módosítás"]);
-            if (modificationType == -1) return joinedStudentDatas;
-            string newData = ExtendentConsole.ReadString("Kérem az új adatot: ");
+            int modificationType = Menus.ReusableMenu(["Név módosítás", "Születésnap módosítása","Anyja nevének módosítása", "Lakcím módosítás"]);
+            if (modificationType == -1) break;
+            string newData;
+            var student = await dbContext.Students.FirstAsync(x => x.EducationalID == studentNeedsModifyId);
             switch (modificationType)
             {
 
                 case 0:
                     {
-                        if (joinedStudentDatas.Any(x => x.Name == newData))
+                        newData = await ConsoleFunctions.ReadStudentNameAsync(dbContext);
+                        if (newData.ToLower() == "e")
                         {
-                            int counter = 0;
-                            while (joinedStudentDatas.Any(x => x.Name == newData))
-                            {
-                                counter++;
-                                newData = newData + $"{counter}";
-                            }
+                            break;
                         }
-                        joinedStudentDatas[indexOfStudent].Name = newData; break;
+                        student.Name = newData;
+                        break;
                     }
                 case 1:
                     {
-                        joinedStudentDatas[indexOfStudent].Class = newData; break;
+                        student.BirthDay = ExtendentConsole.ReadDateTime("Kérem az új születésnapot: ");
+                        break;
                     }
                 case 2:
                     {
-                        joinedStudentDatas[indexOfStudent].Address = newData; break;
+                        student.MothersName = ExtendentConsole.ReadString("Kérem az anyja módosított nevét: ");
+                        break;
+                    }
+                case 3:
+                    {
+                        student.AddressId = await ConsoleFunctions.GetAddressIdCompleteAsync(dbContext);
+                        break;
                     }
             }
+            await dbContext.SaveChangesAsync();
         } while (true);
 
     }
 
     
-    public static List<JoinedStudentData> DeleteStudentsData(List<JoinedStudentData> joinedStudentDatas)
+    public static async Task DeleteStudentsDataAsync(ApplicationDbContext dbContext)
     { 
         do
         {
             Console.Clear();
 
-            int studentNeedsDeleteIndex = ConsoleFunctions.GetStudentIndex(joinedStudentDatas);
-            if (studentNeedsDeleteIndex == -1)
+            uint studentNeedsDeleteID = await ConsoleFunctions.GetStudentIdAsync(dbContext);
+            if (studentNeedsDeleteID == 0)
             {
-                return joinedStudentDatas;
+                return;
             }
-            string studentNeedsDelete = joinedStudentDatas[studentNeedsDeleteIndex].Name;
-
-            joinedStudentDatas = joinedStudentDatas.Except(joinedStudentDatas.Where(x => x.Name == studentNeedsDelete)).ToList();
+            dbContext.Students.Remove(await dbContext.Students.FirstAsync(x => x.EducationalID == studentNeedsDeleteID));
+            await dbContext.SaveChangesAsync();
 
         } while (true);
     }
     #endregion
 
     #region subject
-    public static Dictionary<string, ICollection<int>> AddNewSubjects(Dictionary<string, ICollection<int>> subjects)
+    public static async Task AddNewSubjectAsync(ApplicationDbContext dbContext)
     {
-
-        bool moreSubject = false;
         string input = null;
-        do
-        {  
+        SubjectEntity subject;
             input = ExtendentConsole.ReadString("Kérem a tantárgy nevét vagy a feladat végesztével a 'e' gomb lenyomása: ").ToLower();
             if (input.ToLower() != "e")
             {
-                if (!subjects.ContainsKey(input))
+                if (!dbContext.Subjects.Any(x => x.Name == input))
                 {
-                    subjects.Add(input, AddNewMark());
+                    subject = new SubjectEntity() {Name = input };
+                await dbContext.Subjects.AddAsync(subject);
+                await dbContext.SaveChangesAsync();
                 }
             }
-            else
-            {
-                moreSubject = true;
-            }
-        }
-        while (!moreSubject);
-
-        return subjects;
+         
     }
 
-    public static List<JoinedStudentData> AddNewSubjectsToExistingStudents(List<JoinedStudentData> joinedStudentDatas, int indexOfStudent)
-    {
-        int iterationCounter = 0;
-        do
-        {
-
-            if (iterationCounter > 0)
-            {
-                if(ConsoleFunctions.AskIfWantTocontinue())
-                 { break; }
-            }        
-
-            joinedStudentDatas[indexOfStudent].Subjects = AddNewSubjects(joinedStudentDatas[indexOfStudent].Subjects);
-
-            iterationCounter++;
-        }while (true);
-        return joinedStudentDatas;
-
-    }
-
-    public static List<JoinedStudentData> DeleteSubjects(List<JoinedStudentData> joinedStudentDatas, int indexOfStudent)
+    public static async Task DeleteSubjectsAsync(ApplicationDbContext dbContext)
     {
         do
         {
             Console.Clear();
 
-            string subject = ConsoleFunctions.GetSubjectName(joinedStudentDatas[indexOfStudent].Subjects);
-            if (subject == "")
+            uint subjectId =await ConsoleFunctions.GetSubjectId(dbContext);
+            if (subjectId == 0)
             { 
-                return joinedStudentDatas; 
+                return; 
             }
 
-            joinedStudentDatas[indexOfStudent].Subjects.Remove(subject);
+            dbContext.Subjects.Remove(await dbContext.Subjects.FirstAsync(x => x.Id == subjectId));
+            await dbContext.SaveChangesAsync();
 
         } while (true);
     }
 
     
 
-    public static List<JoinedStudentData> ModifySubjectName(List<JoinedStudentData> joinedStudentDatas, int indexOfStudent)
+    public static async Task ModifySubjectNameAsync(ApplicationDbContext dbContext)
     {
-        Dictionary<string, ICollection<int>> subjectFolder = joinedStudentDatas[indexOfStudent].Subjects;
-
-        string subject = ConsoleFunctions.GetSubjectName(subjectFolder);
-
-        if (subject == "")
-        { return joinedStudentDatas;
+        List<SubjectEntity> subjects = await dbContext.Subjects.ToListAsync();
+        List<string> subjectNames = subjects.Select(x => x.Name).ToList();
+        int selectedSubjectIndex = Menus.ReusableMenu(subjectNames);
+        if (selectedSubjectIndex == 0)
+        { return ;
         }
 
         string newName = "";
         do
         {
            newName = ExtendentConsole.ReadString("Kérem a tantárgy módosított nevét: ").ToLower();
-        } while (subjectFolder.ContainsKey(newName));
-
-
-        List<int> temp = subjectFolder[subject].ToList();
-         subjectFolder.Remove(subject);
-         subjectFolder.Add(newName, temp);
-
-         joinedStudentDatas[indexOfStudent].Subjects = subjectFolder;
-        return joinedStudentDatas;
+        } while (subjectNames.Any(x => x == newName));
+        subjects.First(x => x.Name == subjectNames[selectedSubjectIndex -1]).Name = newName;
+        await dbContext.SaveChangesAsync();
     }
     #endregion
 
     #region mark
-    public static  List<int> AddNewMark(List<int> markList = null)
+    public static async Task AddNewMarkAsync(ApplicationDbContext applicationDb)
     {
-        if (markList == null)
+       uint studentId =await ConsoleFunctions.GetStudentIdAsync(applicationDb);
+        uint subjectId = await Menus.SelectNewOrExistingSubjectAsync(applicationDb);
+            
+            Console.Clear();
+
+        MarkEntity mark = new MarkEntity() { 
+            Date = ExtendentConsole.ReadDateTime("Kérem a dátumot: "),
+            Mark = (uint)ExtendentConsole.ReadInteger(1, 5, "Kérem a beírandó jegyet: "),
+            StudentId = studentId,
+            SubjectId = subjectId
+        };
+        await applicationDb.Marks.AddAsync(mark);
+        await applicationDb.SaveChangesAsync();
+    }
+
+    public static async Task DeleteMarkAsync(ApplicationDbContext dbContext)
+    {
+        uint SelectedMarkId =await ConsoleFunctions.GetMarkIdAsync(dbContext);
+        dbContext.Marks.Remove(await dbContext.Marks.FirstAsync(x => x.MarkId == SelectedMarkId));
+        await dbContext.SaveChangesAsync();
+    }
+
+    public static async Task ModifyMarkAsync(ApplicationDbContext dbContext)
+    {
+        uint selectedMarkId =await ConsoleFunctions.GetMarkIdAsync(dbContext);
+        if(selectedMarkId == 0) return;
+
+        int whatToModify = Menus.ReusableMenu(["jegy", "Dátum"]);
+        if( whatToModify == -1) return;
+
+        List<MarkEntity> marks =await dbContext.Marks.ToListAsync();
+
+        switch (whatToModify)
         { 
-            markList = new List<int>(); 
+            case 0:
+                {
+                    marks.First(x => x.MarkId == selectedMarkId).Mark = (uint)ExtendentConsole.ReadInteger(1, 5, "Kérem a módosítot jegyet: ");
+                    break;
+                }
+            case 1:
+                {
+                    marks.First(x => x.MarkId == selectedMarkId).Date = ExtendentConsole.ReadDateTime("Kérem a módosított dátumot: ");
+                    break;
+                }
         }
-
-        int input = 0;
-        do
-        {
-            Console.Clear();
- 
-             input = ExtendentConsole.ReadInteger(0, 5, "Kérem a beírandó jegyet, vagy a kilépshez a 0-át: ");
-             if (input == 0)
-                    {
-                        break;
-                    }
-             markList.Add(input);
-         }while (true);
-        return markList;
-    }
-
-    public static List<int> DeleteMark(List<int> markList)
-    {
-        int indexOfMark = 0;
-        do
-        {
-            Console.Clear();
-
-            indexOfMark = ConsoleFunctions.GetMarkIndex(markList);
-
-            if (indexOfMark == -1)
-            {
-                break;
-            }
-            markList.RemoveAt(indexOfMark);
-
-        } while (true);
-
-        return markList;
-    }
-
-    public static List<int> ModifyMark(List<int> markList)
-    {
-        int selectedMarkIndex = 0;
-        int inputNewMark = 0;
-        do
-        {
-            selectedMarkIndex = ConsoleFunctions.GetMarkIndex(markList);
-            if (selectedMarkIndex == -1)
-            {
-                break;
-            }
-            inputNewMark = ExtendentConsole.ReadInteger(1, 5, "Kérem az új jegyet: ");
-            markList.RemoveAt(selectedMarkIndex );
-            markList.Insert(selectedMarkIndex , inputNewMark);
-        } while (true) ;
-
-        return markList;
+        await dbContext.SaveChangesAsync();
     }
     #endregion
 
-    #region managingSaving
-    public static async Task<List<JoinedStudentData>> GetExistingData()
-    {
-        List<Student> students = await FileService.ReadFromFileAsync<Student>("diakok.json");
-        List<SubjectFolder> subjects = await FileService.ReadFromFileAsync<SubjectFolder>("tantargyak.json");
-
-
-        var temp = from student in students
-                   join subject in subjects on student.StudentId equals subject.StudentId
-                   select new JoinedStudentData
-                   {
-                       Name = student.Name,
-                       Address = student.Address,
-                       Class = student.Class,
-                       Id = student.StudentId,
-                       Subjects = subject.Subjects
-
-                   };
-
-        List<JoinedStudentData> joinedStudentsDatas = temp.ToList();
-
-        return joinedStudentsDatas;
+    #region address
+    public static async Task DeleteAddressAsync(ApplicationDbContext dbContext)
+    { 
+        List<AddressEntity> addresses =await dbContext.Addresses.Include(a => a.Street).ThenInclude(a => a.City).ToListAsync();
+        List<string> addressNames = new List<string>();
+        string temp = "";
+        foreach (AddressEntity address in addresses) 
+        {
+            temp = $"{address.Street.City.Name} {address.Street.Name} {address.Address}.";
+            addressNames.Add(temp);
+        }
+        int selectedAddressNumber = Menus.ReusableMenu(addressNames);
+        dbContext.Remove(addresses[selectedAddressNumber]);
+        dbContext.SaveChanges();
     }
 
-    public static async Task WriteData(List<JoinedStudentData> joinedStudentsDatas)
+    public static async Task ModifyAddressAsync(ApplicationDbContext dbContext)
     {
-        List<Student> students = joinedStudentsDatas.Select(x => new Student
+        List<AddressEntity> addresses = await dbContext.Addresses.Include(a => a.Street).ThenInclude(a => a.City).ToListAsync();
+        List<string> addressNames = new List<string>();
+        string temp = "";
+        foreach (AddressEntity address in addresses)
         {
-            Name = x.Name,
-            Class = x.Class,
-            Address = x.Address,
-            StudentId = x.Id
-        }).ToList();
-
-        List<SubjectFolder> subjects = joinedStudentsDatas.Select(x => new SubjectFolder
-        {
-            StudentId = x.Id,
-            Subjects = x.Subjects
-        }).ToList();
-        await FileService.WriteToJsonFile(students, "diakok.json");
-        await FileService.WriteToJsonFile(subjects, "tantargyak.json");
-
+            temp = $"{address.Street.City.Name} {address.Street.Name} {address.Address}.";
+            addressNames.Add(temp);
+        }
+        int selectedAddressNumber = Menus.ReusableMenu(addressNames);
+        addresses[selectedAddressNumber].Address = ExtendentConsole.ReadString("Kérem az új címet: ");
+        dbContext.SaveChanges();
     }
+
     #endregion
+
 }

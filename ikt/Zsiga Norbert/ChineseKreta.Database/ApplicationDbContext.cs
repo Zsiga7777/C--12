@@ -6,8 +6,9 @@ public class ApplicationDbContext : DbContext
 {
     public DbSet<AddressEntity> Addresses { get; set; }
     public DbSet<CityEntity> Cities { get; set; }
-    public DbSet<ClassEntity> Classes { get; set; }
+    public DbSet<CountryEntity> Countries { get; set; }
     public DbSet<MarkEntity> Marks { get; set; }
+    public DbSet<StreetEntity> Streets { get; set; }
     public DbSet<StudentEntity> Students { get; set; }
     public DbSet<SubjectEntity> Subjects { get; set; }
     public ApplicationDbContext() : base()

@@ -5,16 +5,18 @@ public class StudentEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public uint Id { get; set; }
+    public uint EducationalID { get; set; }
 
     [Required]
     [StringLength(50)]
     public string Name { get; set; }
 
-    public uint ClassId { get; set; }
-    public virtual ClassEntity Class { get; set; }
+    [Required]
+    public DateTime BirthDay { get; set; }
 
-    [ForeignKey("Address")]
+    [Required]
+    [StringLength (50)]
+    public string MothersName { get; set; }
     public uint AddressId { get; set; }
     public virtual AddressEntity Address { get; set; }
 

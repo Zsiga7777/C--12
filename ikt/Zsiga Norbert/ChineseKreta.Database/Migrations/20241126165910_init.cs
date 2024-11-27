@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -11,28 +12,16 @@ namespace ChineseKreta.Database.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "City",
-                columns: table => new
-                {
-                    PostalCode = table.Column<long>(type: "bigint", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_City", x => x.PostalCode);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Class",
+                name: "Country",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Class", x => x.Id);
+                    table.PrimaryKey("PK_Country", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -49,23 +38,62 @@ namespace ChineseKreta.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "City",
+                columns: table => new
+                {
+                    PostalCode = table.Column<long>(type: "bigint", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
+                    CountryId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_City", x => x.PostalCode);
+                    table.ForeignKey(
+                        name: "FK_City_Country_CountryId",
+                        column: x => x.CountryId,
+                        principalTable: "Country",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Street",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PostalCode = table.Column<long>(type: "bigint", nullable: false),
+                    CityPostalCode = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Street", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Street_City_CityPostalCode",
+                        column: x => x.PostalCode,
+                        principalTable: "City",
+                        principalColumn: "PostalCode",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Address",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Address = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
-                    CityId = table.Column<long>(type: "bigint", nullable: false),
-                    StudentId = table.Column<long>(type: "bigint", nullable: false)
+                    StreetId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Address", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Address_City_CityId",
-                        column: x => x.CityId,
-                        principalTable: "City",
-                        principalColumn: "PostalCode",
+                        name: "FK_Address_Street_StreetId",
+                        column: x => x.StreetId,
+                        principalTable: "Street",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -73,25 +101,20 @@ namespace ChineseKreta.Database.Migrations
                 name: "Student",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
+                    EducationalID = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    ClassId = table.Column<long>(type: "bigint", nullable: false),
+                    BirthDay = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    MothersName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     AddressId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Student", x => x.Id);
+                    table.PrimaryKey("PK_Student", x => x.EducationalID);
                     table.ForeignKey(
                         name: "FK_Student_Address_AddressId",
                         column: x => x.AddressId,
                         principalTable: "Address",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Student_Class_ClassId",
-                        column: x => x.ClassId,
-                        principalTable: "Class",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -103,6 +126,7 @@ namespace ChineseKreta.Database.Migrations
                     MarkId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Mark = table.Column<long>(type: "bigint", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     StudentId = table.Column<long>(type: "bigint", nullable: false),
                     SubjectId = table.Column<long>(type: "bigint", nullable: false)
                 },
@@ -113,7 +137,7 @@ namespace ChineseKreta.Database.Migrations
                         name: "FK_Mark_Student_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Student",
-                        principalColumn: "Id",
+                        principalColumn: "EducationalID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Mark_Subject_SubjectId",
@@ -124,9 +148,20 @@ namespace ChineseKreta.Database.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Address_CityId",
+                name: "IX_Address_StreetId",
                 table: "Address",
-                column: "CityId");
+                column: "StreetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_City_CountryId",
+                table: "City",
+                column: "CountryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Country_Name",
+                table: "Country",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Mark_StudentId",
@@ -139,15 +174,14 @@ namespace ChineseKreta.Database.Migrations
                 column: "SubjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Student_AddressId",
-                table: "Student",
-                column: "AddressId",
-                unique: true);
+                name: "IX_Street_CityPostalCode",
+                table: "Street",
+                column: "CityPostalCode");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Student_ClassId",
+                name: "IX_Student_AddressId",
                 table: "Student",
-                column: "ClassId");
+                column: "AddressId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Subject_Name",
@@ -172,10 +206,13 @@ namespace ChineseKreta.Database.Migrations
                 name: "Address");
 
             migrationBuilder.DropTable(
-                name: "Class");
+                name: "Street");
 
             migrationBuilder.DropTable(
                 name: "City");
+
+            migrationBuilder.DropTable(
+                name: "Country");
         }
     }
 }
