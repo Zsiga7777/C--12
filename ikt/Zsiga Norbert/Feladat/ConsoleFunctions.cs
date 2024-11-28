@@ -15,7 +15,8 @@ namespace Feladat
             uint studentIndex =await GetStudentIdAsync(dbContext);
             if (studentIndex == 0) return;
             StudentEntity student = studentsData.First(x => x.EducationalID == studentIndex);
-            Console.WriteLine($"neve: {student.Name}\nanyja neve: {student.MothersName}\nszületési ideje: {student.BirthDay}\nlakhelye: {student.Address.Street.City.Name} {student.Address.Street.Name} {student.Address.Address} ");
+            Console.Clear();
+            Console.WriteLine($"neve: {student.Name}\nanyja neve: {student.MothersName}\nszületési ideje: {student.BirthDay}\nlakhelye:{student.Address.Street.City.Name} {student.Address.Street.Name} {student.Address.Address} ");
             await Task.Delay(10000);
         }
 
@@ -85,16 +86,16 @@ namespace Feladat
                 Console.Clear();
                 temp = ExtendentConsole.ReadInteger(0,"Kérem az új város irányító számát: ");
 
-            } while (cities.Any(x => x.PostalCode == temp));
-            CityEntity city = new CityEntity() { Name =ExtendentConsole.ReadString("Kérem az új város nevét: "), CountryId = counryId, PostalCode = (uint)temp};
+            } while (cities.Any(x => x.Id == temp));
+            CityEntity city = new CityEntity() { Name =ExtendentConsole.ReadString("Kérem az új város nevét: "), CountryId = counryId, Id = (uint)temp};
             await dbContext.Cities.AddAsync(city);
             await dbContext.SaveChangesAsync();
         }
 
-        public static async Task AddStreetAsync(ApplicationDbContext dbContext, uint postalCode)
+        public static async Task AddStreetAsync(ApplicationDbContext dbContext, uint cityId)
         {
             Console.Clear();
-            StreetEntity street = new StreetEntity() { Name = ExtendentConsole.ReadString("Kérem az új utca nevét: "), PostalCode = postalCode };
+            StreetEntity street = new StreetEntity() { Name = ExtendentConsole.ReadString("Kérem az új utca nevét: "), CityId = cityId };
             await dbContext.Streets.AddAsync(street);
             await dbContext.SaveChangesAsync();
         }
@@ -145,14 +146,14 @@ namespace Feladat
             List<CityEntity> cities = await dbContext.Cities.Where(x => x.CountryId == countryId).ToListAsync();
             List<string> cityNames = cities.Select(x => x.Name).ToList();
             int selectedCity = Menus.ReusableMenu(cityNames);
-            uint postalCode = cities.First(x => x.Name == cityNames[selectedCity]).PostalCode;
+            uint postalCode = cities.First(x => x.Name == cityNames[selectedCity]).Id;
          
             return postalCode;
         }
 
-        public static async Task<uint> GetStreetIdAsync(ApplicationDbContext dbContext, uint postalCode)
+        public static async Task<uint> GetStreetIdAsync(ApplicationDbContext dbContext, uint cityId)
         {
-            List<StreetEntity> streets = await dbContext.Streets.Where(x => x.PostalCode == postalCode).ToListAsync();
+            List<StreetEntity> streets = await dbContext.Streets.Where(x => x.CityId == cityId).ToListAsync();
             List<string> streetNames = streets.Select(x => x.Name).ToList();
             int selectedStreet = Menus.ReusableMenu(streetNames);
             uint streetId = streets.First(x => x.Name == streetNames[selectedStreet]).Id;
@@ -181,10 +182,13 @@ namespace Feladat
         public static async Task AddAddressCompleteAsync(ApplicationDbContext dbContext)
         {
             uint countryId = await Menus.SelectNewOrExistingCountryAsync(dbContext);
+            if (countryId == 0) { return; }
 
             uint postalCode = await Menus.SelectNewOrExistingCityAsync(dbContext, countryId);
+            if (postalCode == 0) { return; }
 
             uint streetId = await Menus.SelectNewOrExistingStreetAsync(dbContext, postalCode);
+            if(streetId == 0) { return; }
 
             await AddAddressAsync(dbContext, streetId);
             

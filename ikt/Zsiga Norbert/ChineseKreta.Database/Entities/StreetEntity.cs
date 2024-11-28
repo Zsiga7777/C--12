@@ -10,7 +10,7 @@ public class StreetEntity
     [StringLength(50)]
     public string Name { get; set; }
 
-    public uint PostalCode { get; set; }
+    public uint CityId { get; set; }
 
     public virtual CityEntity City { get; set; }
 

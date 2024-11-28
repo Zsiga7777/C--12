@@ -118,7 +118,8 @@ namespace Feladat
         public static async Task<uint> SelectNewOrExistingAddressCompleteAsync(ApplicationDbContext dbContext)
         {
             Console.WriteLine("Válasston lehetőséget: ");
-            int input = ReusableMenuWithoutExit(["Meglévő cím használata", "Új cím hozzáadása"]);
+            int input = ReusableMenu(["Meglévő cím használata", "Új cím hozzáadása"]);
+            if (input == -1) { return 0; }
             uint selectedAddressId = 0;
             switch (input)
             { 
@@ -139,7 +140,8 @@ namespace Feladat
         public static async Task<uint> SelectNewOrExistingCountryAsync(ApplicationDbContext dbContext)
         {
             Console.WriteLine("Válasston lehetőséget: ");
-            int input = ReusableMenuWithoutExit(["Meglévő ország használata", "Új ország hozzáadása"]);
+            int input = ReusableMenu(["Meglévő ország használata", "Új ország hozzáadása"]);
+            if(input == -1) { return 0; }
             uint selectedCountryId = 0;
             switch (input)
             {
@@ -160,7 +162,8 @@ namespace Feladat
         public static async Task<uint> SelectNewOrExistingCityAsync(ApplicationDbContext dbContext, uint countryId)
         {
             Console.WriteLine("Válasston lehetőséget: ");
-            int input = ReusableMenuWithoutExit(["Meglévő város használata", "Új város hozzáadása"]);
+            int input = ReusableMenu(["Meglévő város használata", "Új város hozzáadása"]);
+            if(input == -1) {return 0; }
             uint selectedCityId = 0;
             switch (input)
             {
@@ -172,7 +175,7 @@ namespace Feladat
                 case 1:
                     {
                         await ConsoleFunctions.AddCityAsync(dbContext, countryId);
-                        selectedCityId = dbContext.Cities.OrderBy(x => x.PostalCode).Last().PostalCode;
+                        selectedCityId = dbContext.Cities.OrderBy(x => x.Id).Last().Id;
                         break;
                     }
             }
@@ -181,7 +184,8 @@ namespace Feladat
         public static async Task<uint> SelectNewOrExistingStreetAsync(ApplicationDbContext dbContext, uint postalcode)
         {
             Console.WriteLine("Válasston lehetőséget: ");
-            int input = ReusableMenuWithoutExit(["Meglévő utca használata", "Új utca hozzáadása"]);
+            int input = ReusableMenu(["Meglévő utca használata", "Új utca hozzáadása"]);
+            if(input == -1) { return 0; }
             uint selectedStreetId = 0;
             switch (input)
             {
@@ -202,7 +206,8 @@ namespace Feladat
         public static async Task<uint> SelectNewOrExistingSubjectAsync(ApplicationDbContext dbContext)
         {
             Console.WriteLine("Válasston lehetőséget: ");
-            int input = ReusableMenuWithoutExit(["Meglévő tantárgy használata", "Új tantárgy hozzáadása"]);
+            int input = ReusableMenu(["Meglévő tantárgy használata", "Új tantárgy hozzáadása"]);
+            if (input == -1) { return 0; }
             uint selectedSubjectId = 0;
             switch (input)
             {
@@ -300,80 +305,6 @@ namespace Feladat
                 }
             } while (true);
         }
-        public static int ReusableMenuWithoutExit<T>(List<T> options)
-        {
-            int index = 0;
-            int pageNumber = 0;
-            ConsoleKeyInfo keyinfo;
-            do
-            {
-                List<T> currentPage = options.Skip((pageNumber) * 10).Take(10).ToList();
-                ConsoleFunctions.WriteMenu(currentPage, index);
-                Console.WriteLine("\nfelfele lépéshez felfelenyíl, lefele lépéhez lefelenyíl, kiválasztáshoz enter, kilépéshez e");
-                Console.WriteLine("előző oldal balranyíl, követkető oldal jobbranyíl");
-                keyinfo = Console.ReadKey();
-                if (keyinfo.Key == ConsoleKey.UpArrow)
-                {
-                    if (index - 1 < 0)
-                    {
-                        index = 0;
-                    }
-                    else
-                    {
-                        index--;
-                    }
-                }
-                else if (keyinfo.Key == ConsoleKey.DownArrow)
-                {
-                    if (index + 1 + pageNumber * 10 >= options.Count)
-                    {
-                        index = 0;
-                    }
-                    else if (index == 9)
-                    {
-                        index = 0;
-                    }
-                    else
-                    {
-                        index++;
-                    }
-                }
-                else if (keyinfo.Key == ConsoleKey.LeftArrow)
-                {
-                    if (pageNumber - 1 < 0 && options.Count > 10)
-                    {
-                        pageNumber = options.Count / 10;
-                        index = 0;
-                    }
-                    else if (pageNumber - 1 < 0)
-                    {
-                        pageNumber = 0;
-                        index = 0;
-                    }
-                    else
-                    {
-                        pageNumber--;
-                        index = 0;
-                    }
-                }
-                else if (keyinfo.Key == ConsoleKey.RightArrow)
-                {
-                    if (pageNumber + 1 >= options.Count / (double)10)
-                    {
-                        pageNumber = 0;
-                        index = 0;
-                    }
-                    else
-                    {
-                        pageNumber++;
-                        index = 0;
-                    }
-                }
-                else if (keyinfo.Key == ConsoleKey.Enter)
-                {
-                    return index + pageNumber * 10;
-                }
-            } while (true);
-        }
+       
     }
 }

@@ -1,5 +1,4 @@
-﻿
-namespace Solution.DesktopApp
+﻿namespace Solution.DesktopApp
 {
     public static class MauiProgram
     {
@@ -10,12 +9,10 @@ namespace Solution.DesktopApp
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
                 .UseMauiCommunityToolkitMarkup()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                });
-
+                .UseFontConfiguration()
+                .UseAppConfigurations()
+                .UseDIConfiguration();
+            
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif

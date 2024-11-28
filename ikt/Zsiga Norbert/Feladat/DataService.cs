@@ -20,7 +20,7 @@ public static class DataService
             }
 
             uint address = await Menus.SelectNewOrExistingAddressCompleteAsync(dbContext);
-
+            if(address == 0) return;
             var student = new StudentEntity()
             {
                 Name = input,
@@ -164,8 +164,10 @@ public static class DataService
     public static async Task AddNewMarkAsync(ApplicationDbContext applicationDb)
     {
        uint studentId =await ConsoleFunctions.GetStudentIdAsync(applicationDb);
+        if(studentId == 0) { return ; }
+
         uint subjectId = await Menus.SelectNewOrExistingSubjectAsync(applicationDb);
-            
+            if(subjectId == 0) { return ; }
             Console.Clear();
 
         MarkEntity mark = new MarkEntity() { 

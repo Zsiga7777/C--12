@@ -6,7 +6,7 @@ public class CityEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
-    public uint PostalCode { get; set; }
+    public uint Id { get; set; }
 
     [Required]
     [StringLength(60)]
