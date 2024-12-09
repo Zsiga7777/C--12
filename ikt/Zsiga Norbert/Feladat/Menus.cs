@@ -1,10 +1,4 @@
-﻿
-
-using ChineseKreta.Database;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection;
-
-namespace Feladat
+﻿namespace Feladat
 {
     public class Menus
     {
@@ -26,7 +20,12 @@ namespace Feladat
                     "Tantárgy módosítása",
                     "Jegy hozzáadása",
                     "Jegy módosítása",
-                    "Jegy törlése"]);
+                    "Jegy törlése",
+                    "Utca törlése",
+                    "Utca módosítása",
+                    "Város módosítása",
+                    "Ország módosítása",
+                ]);
 
                 switch (input)
                 {
@@ -38,7 +37,7 @@ namespace Feladat
                     case 0:
                         {
                             Console.Clear();
-                            await ConsoleFunctions.WriteStudentData(dbContext);
+                            await StudentFunctions.WriteStudentData(dbContext);
                             break;
                         }
                     case 1:
@@ -52,62 +51,86 @@ namespace Feladat
                     case 2:
                         {
                             Console.Clear();
-                            await DataService.AddNewStudentsAsync(dbContext);
+                            await StudentFunctions.AddNewStudentsAsync(dbContext);
                             break;
                         }
                     case 3:
                         {
                             Console.Clear();
                            
-                            await DataService.ModifyStudentsDataAsync(dbContext);
+                            await StudentFunctions.ModifyStudentsDataAsync(dbContext);
                             break;
                         }
                     case 4:
                         {
                             Console.Clear();
-                            await DataService.DeleteStudentsDataAsync(dbContext);
+                            await StudentFunctions.DeleteStudentsDataAsync(dbContext);
                             break;
                         }
                     case 5:
                         {
                             Console.Clear();
-                            await DataService.DeleteAddressAsync(dbContext);
+                            await AddressFunctions.DeleteAddressAsync(dbContext);
                             break;
                         }
                     case 6:
                         {
                             Console.Clear();
-                            await DataService.ModifyAddressAsync(dbContext);
+                            await AddressFunctions.ModifyAddressAsync(dbContext);
                             break;
                         }
                     case 7:
                         {
                             Console.Clear();
-                            await DataService.DeleteSubjectsAsync(dbContext);
+                            await SubjectFunctions.DeleteSubjectsAsync(dbContext);
                             break;
                         }
                     case 8:
                         {
                             Console.Clear();
-                            await DataService.ModifySubjectNameAsync(dbContext);
+                            await SubjectFunctions.ModifySubjectNameAsync(dbContext);
                             break;
                         }
                     case 9:
                         {
                             Console.Clear();
-                            await DataService.AddNewMarkAsync(dbContext);
+                            await MarkFunctions.AddNewMarkAsync(dbContext);
                             break;
                         }
                     case 10:
                         {
                             Console.Clear();
-                            await DataService.ModifyMarkAsync(dbContext);
+                            await MarkFunctions.ModifyMarkAsync(dbContext);
                             break;
                         }
                     case 11:
                         {
                             Console.Clear();
-                            await DataService.DeleteMarkAsync(dbContext);
+                            await MarkFunctions.DeleteMarkAsync(dbContext);
+                            break;
+                        }
+                    case 12:
+                        {
+                            Console.Clear();
+                            await StreetFunctions.DeleteStreetAsync(dbContext);
+                            break;
+                        }
+                    case 13:
+                        {
+                            Console.Clear();
+                            await StreetFunctions.ModifyStreetAsync(dbContext);
+                            break;
+                        }
+                    case 14:
+                        {
+                            Console.Clear();
+                            await CityFunctions.ModifyCityAsync(dbContext);
+                            break;
+                        }
+                    case 15:
+                        {
+                            Console.Clear();
+                            await CountryFunctions.ModifyCountryAsync(dbContext);
                             break;
                         }
                 }
@@ -115,117 +138,8 @@ namespace Feladat
             }
             while (!endOfWork);
         }
-        public static async Task<uint> SelectNewOrExistingAddressCompleteAsync(ApplicationDbContext dbContext)
-        {
-            Console.WriteLine("Válasston lehetőséget: ");
-            int input = ReusableMenu(["Meglévő cím használata", "Új cím hozzáadása"]);
-            if (input == -1) { return 0; }
-            uint selectedAddressId = 0;
-            switch (input)
-            { 
-                case 0:
-                    { 
-                       selectedAddressId = await ConsoleFunctions.GetAddressIdCompleteAsync(dbContext);
-                        break ;
-                    }
-                    case 1:
-                    {
-                        await ConsoleFunctions.AddAddressCompleteAsync(dbContext);
-                        selectedAddressId = dbContext.Addresses.OrderBy(x => x.Id).Last().Id;
-                        break;
-                    }
-            }
-            return selectedAddressId;
-        }
-        public static async Task<uint> SelectNewOrExistingCountryAsync(ApplicationDbContext dbContext)
-        {
-            Console.WriteLine("Válasston lehetőséget: ");
-            int input = ReusableMenu(["Meglévő ország használata", "Új ország hozzáadása"]);
-            if(input == -1) { return 0; }
-            uint selectedCountryId = 0;
-            switch (input)
-            {
-                case 0:
-                    {
-                        selectedCountryId = await ConsoleFunctions.GetCountryIdAsync(dbContext);
-                        break;
-                    }
-                case 1:
-                    {
-                        await ConsoleFunctions.AddCountryAsync(dbContext);
-                        selectedCountryId = dbContext.Countries.OrderBy(x => x.Id).Last().Id;
-                        break;
-                    }
-            }
-            return selectedCountryId;
-        }
-        public static async Task<uint> SelectNewOrExistingCityAsync(ApplicationDbContext dbContext, uint countryId)
-        {
-            Console.WriteLine("Válasston lehetőséget: ");
-            int input = ReusableMenu(["Meglévő város használata", "Új város hozzáadása"]);
-            if(input == -1) {return 0; }
-            uint selectedCityId = 0;
-            switch (input)
-            {
-                case 0:
-                    {
-                        selectedCityId = await ConsoleFunctions.GetCityIdAsync(dbContext, countryId);
-                        break;
-                    }
-                case 1:
-                    {
-                        await ConsoleFunctions.AddCityAsync(dbContext, countryId);
-                        selectedCityId = dbContext.Cities.OrderBy(x => x.Id).Last().Id;
-                        break;
-                    }
-            }
-            return selectedCityId;
-        }
-        public static async Task<uint> SelectNewOrExistingStreetAsync(ApplicationDbContext dbContext, uint postalcode)
-        {
-            Console.WriteLine("Válasston lehetőséget: ");
-            int input = ReusableMenu(["Meglévő utca használata", "Új utca hozzáadása"]);
-            if(input == -1) { return 0; }
-            uint selectedStreetId = 0;
-            switch (input)
-            {
-                case 0:
-                    {
-                        selectedStreetId = await ConsoleFunctions.GetStreetIdAsync(dbContext, postalcode);
-                        break;
-                    }
-                case 1:
-                    {
-                        await ConsoleFunctions.AddStreetAsync(dbContext, postalcode);
-                        selectedStreetId = dbContext.Streets.OrderBy(x => x.Id).Last().Id;
-                        break;
-                    }
-            }
-            return selectedStreetId;
-        }
-        public static async Task<uint> SelectNewOrExistingSubjectAsync(ApplicationDbContext dbContext)
-        {
-            Console.WriteLine("Válasston lehetőséget: ");
-            int input = ReusableMenu(["Meglévő tantárgy használata", "Új tantárgy hozzáadása"]);
-            if (input == -1) { return 0; }
-            uint selectedSubjectId = 0;
-            switch (input)
-            {
-                case 0:
-                    {
-                        selectedSubjectId = await ConsoleFunctions.GetSubjectId(dbContext);
-                        break;
-                    }
-                case 1:
-                    {
-                        await DataService.AddNewSubjectAsync(dbContext);
-                        selectedSubjectId = dbContext.Subjects.OrderBy(x => x.Id).Last().Id;
-                        break;
-                    }
-            }
-            return selectedSubjectId;
-        }
-
+       
+       
         public static int ReusableMenu<T>(List<T> options)
         {
             int index = 0;

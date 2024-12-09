@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModel="clr-namespace:Solution.DesktopApp.ViewModels"
+             x:DataType="viewModel:MainPageViewModel"
+             x:Class="Solution.DesktopApp.MainPage">
+
+    <FlexLayout Direction="Column" 
+                HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" 
+                Margin="50, 0, 50, 0">
+
+        <Label Text="Movie data" HorizontalOptions="Center"/>
+        <StackLayout>
+            <Label Text="Movie title"/>
+            <Entry Text="{Binding Title}" />
+        </StackLayout>
+
+        <StackLayout>
+            <Label Text="Movie lenght in minutes"/>
+            <Entry Text="{Binding Length}" />
+        </StackLayout>
+
+        <StackLayout>
+            <Label Text="Movie release date" />
+            <DatePicker Date="{Binding Release}" MaximumDate="{Binding MaxDateTime}" />
+        </StackLayout>
+        <Button Text="Submit" Command="{Binding OnSubmitCommand}" />
+    </FlexLayout>
+
+</ContentPage>

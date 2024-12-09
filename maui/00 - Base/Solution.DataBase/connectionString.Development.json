@@ -1,0 +1,3 @@
+{
+  "SqlConnectionString": "Server=(localdb)\mssqllocaldb;Database=VehicleDB;Trusted_Connection=True;MultipleActiveResultSets=True;TrustServerCertificate=True;"
+}
