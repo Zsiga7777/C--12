@@ -100,7 +100,7 @@ namespace ChineseKreta.Database.Migrations
                     b.Property<long>("Mark")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("StudentId")
+                    b.Property<long?>("StudentId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("SubjectId")
@@ -146,7 +146,7 @@ namespace ChineseKreta.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("EducationalID"));
 
-                    b.Property<long>("AddressId")
+                    b.Property<long?>("AddressId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("BirthDay")
@@ -217,8 +217,7 @@ namespace ChineseKreta.Database.Migrations
                     b.HasOne("ChineseKreta.Database.Entities.StudentEntity", "Student")
                         .WithMany("Marks")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("ChineseKreta.Database.Entities.SubjectEntity", "Subject")
                         .WithMany("Marks")
@@ -247,8 +246,7 @@ namespace ChineseKreta.Database.Migrations
                     b.HasOne("ChineseKreta.Database.Entities.AddressEntity", "Address")
                         .WithMany("Students")
                         .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Address");
                 });

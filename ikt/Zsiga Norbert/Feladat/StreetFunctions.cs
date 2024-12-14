@@ -2,40 +2,18 @@
 
 public static class StreetFunctions
 {
-    public static async Task<uint> SelectNewOrExistingStreetAsync(ApplicationDbContext dbContext, uint postalcode)
-    {
-        Console.WriteLine("Válasston lehetőséget: ");
-        int input = Menus.ReusableMenu(["Meglévő utca használata", "Új utca hozzáadása"]);
-
-        if (input == -1) { return 0; }
-
-        uint selectedStreetId = 0;
-
-        switch (input)
-        {
-            case 0:
-                {
-                    selectedStreetId = await GetStreetIdAsync(dbContext, postalcode);
-                    break;
-                }
-            case 1:
-                {
-                    await AddStreetAsync(dbContext, postalcode);
-                    selectedStreetId = dbContext.Streets.OrderBy(x => x.Id).Last().Id;
-                    break;
-                }
-        }
-        return selectedStreetId;
-    }
     public static async Task<uint> GetStreetIdAsync(ApplicationDbContext dbContext, uint cityId)
     {
         List<StreetEntity> streets = await dbContext.Streets.Where(x => x.CityId == cityId).ToListAsync();
         List<string> streetNames = streets.Select(x => x.Name).ToList();
+
+        Console.Clear();
+
         int selectedStreet = Menus.ReusableMenu(streetNames);
 
         if (selectedStreet == -1) { return 0; }
 
-        uint streetId = streets.First(x => x.Name == streetNames[selectedStreet]).Id;
+        uint streetId = streets[selectedStreet].Id;
 
         return streetId;
     }
@@ -58,12 +36,14 @@ public static class StreetFunctions
             temp = $"{street.City.Name} {street.Name}.";
             streetNames.Add(temp);
         }
+        Console.Clear();
+
         int selectedStreetNumber = Menus.ReusableMenu(streetNames);
 
         if (selectedStreetNumber == -1) { return; }
 
         dbContext.Remove(streets[selectedStreetNumber]);
-        dbContext.SaveChanges();
+        await dbContext.SaveChangesAsync();
     }
     public static async Task ModifyStreetAsync(ApplicationDbContext dbContext)
     {
@@ -76,11 +56,14 @@ public static class StreetFunctions
             temp = $"{street.City.Name} {street.Name}.";
             streetNames.Add(temp);
         }
+
+        Console.Clear();
+
         int selectedStreetNumber = Menus.ReusableMenu(streetNames);
 
         if (selectedStreetNumber == -1) { return; }
 
         streets[selectedStreetNumber].Name = ExtendentConsole.ReadString("Kérem a módosított utca nevet: ");
-        dbContext.SaveChanges();
+        await dbContext.SaveChangesAsync();
     }
 }

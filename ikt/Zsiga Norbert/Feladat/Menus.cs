@@ -11,16 +11,16 @@
                 Console.WriteLine("A rendszer lehetőségei:");
                 int input = ReusableMenu(["Tanuló adat kiírása",
                     "Tanulók neveinek kiírása",
-                    "Tanulók hozzáadása",
-                    "Tanulók módosítása",
-                    "Tanulók törlése",
-                    "Cím törlése",
-                    "Cím módosítása",
-                    "Tantárgy törlése",
-                    "Tantárgy módosítása",
+                    "Tanuló hozzáadása",
+                    "Tanuló módosítása",
+                    "Tanuló törlése", 
                     "Jegy hozzáadása",
                     "Jegy módosítása",
-                    "Jegy törlése",
+                    "Jegy törlése", 
+                    "Tantárgy törlése",
+                    "Tantárgy módosítása",
+                    "Cím törlése",
+                    "Cím módosítása",
                     "Utca törlése",
                     "Utca módosítása",
                     "Város módosítása",
@@ -70,43 +70,43 @@
                     case 5:
                         {
                             Console.Clear();
-                            await AddressFunctions.DeleteAddressAsync(dbContext);
+                            await MarkFunctions.AddNewMarkAsync(dbContext);
                             break;
                         }
                     case 6:
                         {
                             Console.Clear();
-                            await AddressFunctions.ModifyAddressAsync(dbContext);
+                            await MarkFunctions.ModifyMarkAsync(dbContext);
                             break;
                         }
                     case 7:
                         {
                             Console.Clear();
-                            await SubjectFunctions.DeleteSubjectsAsync(dbContext);
+                            await MarkFunctions.DeleteMarkAsync(dbContext);
                             break;
                         }
                     case 8:
                         {
                             Console.Clear();
-                            await SubjectFunctions.ModifySubjectNameAsync(dbContext);
+                            await SubjectFunctions.DeleteSubjectsAsync(dbContext);
                             break;
                         }
                     case 9:
                         {
                             Console.Clear();
-                            await MarkFunctions.AddNewMarkAsync(dbContext);
+                            await SubjectFunctions.ModifySubjectNameAsync(dbContext);
                             break;
                         }
                     case 10:
                         {
                             Console.Clear();
-                            await MarkFunctions.ModifyMarkAsync(dbContext);
+                            await AddressFunctions.DeleteAddressAsync(dbContext);
                             break;
                         }
                     case 11:
                         {
                             Console.Clear();
-                            await MarkFunctions.DeleteMarkAsync(dbContext);
+                            await AddressFunctions.ModifyAddressAsync(dbContext);
                             break;
                         }
                     case 12:
@@ -138,8 +138,7 @@
             }
             while (!endOfWork);
         }
-       
-       
+
         public static int ReusableMenu<T>(List<T> options)
         {
             int index = 0;

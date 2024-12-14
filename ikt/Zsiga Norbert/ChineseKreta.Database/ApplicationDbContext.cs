@@ -24,7 +24,12 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-      
+      builder.Entity<AddressEntity>().HasMany(x => x.Students).WithOne(x => x.Address).OnDelete(DeleteBehavior.NoAction);
+        builder.Entity<StudentEntity>().HasOne(x => x.Address).WithMany(x => x.Students).OnDelete(DeleteBehavior.NoAction);
+        builder.Entity<StudentEntity>().HasMany(x => x.Marks).WithOne(x => x.Student).OnDelete(DeleteBehavior.Cascade);
+        builder.Entity<MarkEntity>().HasOne(x => x.Student).WithMany(x => x.Marks).OnDelete(DeleteBehavior.NoAction);
+        builder.Entity<MarkEntity>().HasOne(x => x.Subject).WithMany(x => x.Marks).OnDelete(DeleteBehavior.NoAction);
+        builder.Entity<SubjectEntity>().HasMany(x => x.Marks).WithOne(x => x.Subject).OnDelete(DeleteBehavior.Cascade);
     }
 }
 

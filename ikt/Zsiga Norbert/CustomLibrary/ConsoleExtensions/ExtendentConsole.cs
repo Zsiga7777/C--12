@@ -138,5 +138,32 @@
 
     }
 
+    public static DateTime ReadDateTime(string prompt, DateTime maximumDate)
+    {
+        bool isDateTime = false;
+        DateTime dateTime;
+        do
+        {
+            Console.WriteLine($"{prompt}");
+            string text = Console.ReadLine();
+            isDateTime = DateTime.TryParse(text, out dateTime);
+        } while (!isDateTime || dateTime > maximumDate );
+        return dateTime;
+
+    }
+    public static DateTime ReadDateTime(string prompt,DateTime minimumDate, DateTime maximumDate)
+    {
+        bool isDateTime = false;
+        DateTime dateTime;
+        do
+        {
+            Console.WriteLine($"{prompt}");
+            string text = Console.ReadLine();
+            isDateTime = DateTime.TryParse(text, out dateTime);
+        } while (!isDateTime || dateTime > maximumDate || dateTime < minimumDate);
+        return dateTime;
+
+    }
+
 }
 

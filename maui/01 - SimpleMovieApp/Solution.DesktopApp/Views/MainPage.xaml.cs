@@ -1,4 +1,6 @@
-﻿namespace Solution.DesktopApp;
+﻿using Windows.ApplicationModel.Chat;
+
+namespace Solution.DesktopApp;
 
 public partial class MainPage : ContentPage
 {
@@ -9,7 +11,15 @@ public partial class MainPage : ContentPage
     public MainPage(MainPageViewModel viewModel)
     {
         this.BindingContext = viewModel;
-
+        
+        this.SizeChanged += OnSizeChanged;
         InitializeComponent();
+       
+    }
+
+    private void OnSizeChanged(object? sender, EventArgs e)
+    {
+        ContentPage page = sender as ContentPage;
+        ViewModel.DatePickerWidth = page.Window.Width -110;
     }
 }

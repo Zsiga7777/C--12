@@ -2,32 +2,6 @@
 
 public static class CountryFunctions
 {
-    public static async Task<uint> SelectNewOrExistingCountryAsync(ApplicationDbContext dbContext)
-    {
-        Console.WriteLine("Válasston lehetőséget: ");
-        int input = Menus.ReusableMenu(["Meglévő ország használata", "Új ország hozzáadása"]);
-
-        if (input == -1) { return 0; }
-
-        uint selectedCountryId = 0;
-
-        switch (input)
-        {
-            case 0:
-                {
-                    selectedCountryId = await GetCountryIdAsync(dbContext);
-                    break;
-                }
-            case 1:
-                {
-                    await AddCountryAsync(dbContext);
-                    selectedCountryId = dbContext.Countries.OrderBy(x => x.Id).Last().Id;
-                    break;
-                }
-        }
-        return selectedCountryId;
-    }
-
     public static async Task AddCountryAsync(ApplicationDbContext dbContext)
     {
         string temp = "";
@@ -49,26 +23,30 @@ public static class CountryFunctions
     {
         List<CountryEntity> countries = await dbContext.Countries.ToListAsync();
         List<string> countryNames = countries.Select(x => x.Name).ToList();
+
+        Console.Clear();
+
         int selectedCountry = Menus.ReusableMenu(countryNames);
 
         if (selectedCountry == -1)
         {
             return 0;
         }
-        uint countryId = countries.First(x => x.Name == countryNames[selectedCountry]).Id; ;
+        uint countryId = countries[selectedCountry].Id; ;
 
         return countryId;
     }
     public static async Task ModifyCountryAsync(ApplicationDbContext dbContext)
     {
         List<CountryEntity> countries = await dbContext.Countries.ToListAsync();
-        List<string> countryNames = countries.Select(x => x.Name).ToList();
 
-        int selectedCountryNumber = Menus.ReusableMenu(countryNames);
+        Console.Clear();
 
-        if (selectedCountryNumber == -1) { return; }
+        uint selectedCountryId =await GetCountryIdAsync(dbContext);
 
-        countries[selectedCountryNumber].Name = ExtendentConsole.ReadString("Kérem a módosított ország nevet: ");
-        dbContext.SaveChanges();
+        if (selectedCountryId == 0) { return; }
+
+        countries.First(x => x.Id == selectedCountryId).Name = ExtendentConsole.ReadString("Kérem a módosított ország nevet: ");
+        await dbContext.SaveChangesAsync();
     }
 }

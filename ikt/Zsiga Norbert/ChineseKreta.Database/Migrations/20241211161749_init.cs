@@ -41,13 +41,13 @@ namespace ChineseKreta.Database.Migrations
                 name: "City",
                 columns: table => new
                 {
-                    PostalCode = table.Column<long>(type: "bigint", nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
                     CountryId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_City", x => x.PostalCode);
+                    table.PrimaryKey("PK_City", x => x.Id);
                     table.ForeignKey(
                         name: "FK_City_Country_CountryId",
                         column: x => x.CountryId,
@@ -63,17 +63,16 @@ namespace ChineseKreta.Database.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PostalCode = table.Column<long>(type: "bigint", nullable: false),
-                    CityPostalCode = table.Column<long>(type: "bigint", nullable: false)
+                    CityId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Street", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Street_City_CityPostalCode",
-                        column: x => x.PostalCode,
+                        name: "FK_Street_City_CityId",
+                        column: x => x.CityId,
                         principalTable: "City",
-                        principalColumn: "PostalCode",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -106,7 +105,7 @@ namespace ChineseKreta.Database.Migrations
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     BirthDay = table.Column<DateTime>(type: "datetime2", nullable: false),
                     MothersName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    AddressId = table.Column<long>(type: "bigint", nullable: false)
+                    AddressId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -116,7 +115,7 @@ namespace ChineseKreta.Database.Migrations
                         column: x => x.AddressId,
                         principalTable: "Address",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete : ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -127,7 +126,7 @@ namespace ChineseKreta.Database.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Mark = table.Column<long>(type: "bigint", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    StudentId = table.Column<long>(type: "bigint", nullable: false),
+                    StudentId = table.Column<long>(type: "bigint", nullable: true),
                     SubjectId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -174,9 +173,9 @@ namespace ChineseKreta.Database.Migrations
                 column: "SubjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Street_CityPostalCode",
+                name: "IX_Street_CityId",
                 table: "Street",
-                column: "CityPostalCode");
+                column: "CityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Student_AddressId",

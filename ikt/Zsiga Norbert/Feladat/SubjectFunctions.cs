@@ -4,6 +4,7 @@ public static class SubjectFunctions
 {
     public static async Task<uint> SelectNewOrExistingSubjectAsync(ApplicationDbContext dbContext)
     {
+        Console.Clear();
         Console.WriteLine("Válasston lehetőséget: ");
         int input = Menus.ReusableMenu(["Meglévő tantárgy használata", "Új tantárgy hozzáadása"]);
 
@@ -35,6 +36,7 @@ public static class SubjectFunctions
 
     public static async Task<uint> GetSubjectId(ApplicationDbContext dbContext)
     {
+        Console.Clear();
         Console.WriteLine("\nA tantárgyak: ");
 
         List<SubjectEntity> subjects = await dbContext.Subjects.ToListAsync();
@@ -46,14 +48,15 @@ public static class SubjectFunctions
             return 0;
         }
 
-        return subjects.First(x => x.Name == subjectNames[indexOfSubjectName]).Id;
+        return subjects[indexOfSubjectName].Id;
     }
     public static async Task<bool> AddNewSubjectAsync(ApplicationDbContext dbContext)
     {
         string input = null;
         SubjectEntity subject;
 
-        input = ExtendentConsole.ReadString("Kérem a tantárgy nevét vagy a feladat végesztével a 'e' gomb lenyomása: ").ToLower();
+        Console.Clear();
+        input = ExtendentConsole.ReadString("Kérem a tantárgy nevét: ").ToLower();
         if (input.ToLower() != "e")
         {
             if (!dbContext.Subjects.Any(x => x.Name == input))
@@ -69,8 +72,6 @@ public static class SubjectFunctions
 
     public static async Task DeleteSubjectsAsync(ApplicationDbContext dbContext)
     {
-        do
-        {
             Console.Clear();
 
             uint subjectId = await GetSubjectId(dbContext);
@@ -81,8 +82,6 @@ public static class SubjectFunctions
 
             dbContext.Subjects.Remove(await dbContext.Subjects.FirstAsync(x => x.Id == subjectId));
             await dbContext.SaveChangesAsync();
-
-        } while (true);
     }
 
     public static async Task ModifySubjectNameAsync(ApplicationDbContext dbContext)
@@ -91,7 +90,7 @@ public static class SubjectFunctions
         List<string> subjectNames = subjects.Select(x => x.Name).ToList();
         int selectedSubjectIndex = Menus.ReusableMenu(subjectNames);
 
-        if (selectedSubjectIndex == 0)
+        if (selectedSubjectIndex == -1)
         {
             return;
         }
@@ -99,10 +98,11 @@ public static class SubjectFunctions
         string newName = "";
         do
         {
+            Console.Clear();
             newName = ExtendentConsole.ReadString("Kérem a tantárgy módosított nevét: ").ToLower();
         } while (subjectNames.Any(x => x == newName));
 
-        subjects.First(x => x.Name == subjectNames[selectedSubjectIndex - 1]).Name = newName;
+        subjects[selectedSubjectIndex].Name = newName;
         await dbContext.SaveChangesAsync();
     }
 }
