@@ -1,10 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:viewModel="clr-namespace:Solution.DesktopApp.ViewModels"
              xmlns:behaviors="clr-namespace:Solution.DesktopApp.Behaviors"
+             xmlns:converters="clr-namespace:Solution.ValidationLibrary.Converters;assembly=Solution.ValidationLibrary"
              x:DataType="viewModel:MainPageViewModel"
              x:Class="Solution.DesktopApp.MainPage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:FirstValidationErrorConverter x:Key="FirstValdiationErrorConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <FlexLayout Direction="Column" 
                 HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" 
@@ -15,23 +23,32 @@
         <StackLayout>
             <Label Text="Movie title"
                    Style="{x:StaticResource NameLabel}"/>
-            <Entry Text="{Binding Title}" />
+            <Entry Text="{Binding Title.Value}">
+                <Entry.Behaviors>
+                    <toolkit:EventToCommandBehavior EventName="TextChanged" Command="{Binding TitleValidationCommand}" />
+                </Entry.Behaviors>
+            </Entry>
+            <Label Text="{Binding Title.Errors, Converter={StaticResource FirstValdiationErrorConverter}}"
+                   Style="{StaticResource ValidationErrorLabelStyle}" />
         </StackLayout>
 
         <StackLayout>
             <Label Text="Movie lenght in minutes"
                    Style="{x:StaticResource NameLabel}"/>
-            <Entry Text="{Binding Length}">
+            <Entry Text="{Binding Length.Value}">
                 <Entry.Behaviors>
                     <behaviors:EntryIntegerBehavior/>
+                    <toolkit:EventToCommandBehavior EventName="TextChanged" Command="{Binding LengthValidationCommand}" />
                 </Entry.Behaviors>
             </Entry>
+            <Label Text="{Binding Length.Errors, Converter={StaticResource FirstValdiationErrorConverter}}"
+        Style="{StaticResource ValidationErrorLabelStyle}" />
         </StackLayout>
 
         <StackLayout>
             <Label Text="Movie release date" 
                    Style="{x:StaticResource NameLabel}"/>
-            <DatePicker Date="{Binding Release}" MaximumDate="{Binding MaxDateTime}" 
+            <DatePicker Date="{Binding Release.Value}" MaximumDate="{Binding MaxDateTime}" 
                         WidthRequest="{Binding DatePickerWidth}"/>
         </StackLayout>
         <Button Text="Submit" Command="{Binding OnSubmitCommand}" />

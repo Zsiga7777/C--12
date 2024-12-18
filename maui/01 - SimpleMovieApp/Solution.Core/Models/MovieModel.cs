@@ -1,50 +1,60 @@
 ﻿namespace Solution.Core.Models;
-
-[ObservableObject]
 public partial class MovieModel
 {
-    [ObservableProperty]
-    private ValidatableObject<string> id;
+    public ValidatableObject<string> Id { get; protected set; }
 
-    [ObservableProperty]
-    private ValidatableObject<string> title;
+    public ValidatableObject<string> Title { get; protected set; }
 
-    [ObservableProperty]
-    private ValidatableObject<uint?> length;
+    public ValidatableObject<uint?> Length { get; protected set; }
 
-    [ObservableProperty]
-    private ValidatableObject<DateTime> release;
+    public ValidatableObject<DateTime> Release { get; protected set; }
 
     public MovieModel()
     {
-    }
+        this.Title = new ValidatableObject<string>();
+        this.Length = new ValidatableObject<uint?>();
+        this.Release = new ValidatableObject<DateTime>();
 
-    public MovieModel(MovieEntity entity)
+        AddValidators();
+    }
+    public MovieModel(MovieEntity entity) : this()
     {
-        Id = entity.PublicId;
-        Title = entity.Title;
-        Length = entity.Length;
-        Release = entity.Release;
+        Id.Value = entity.PublicId;
+        Title.Value = entity.Title;
+        Length.Value = entity.Length;
+        Release.Value = entity.Release;
     }
 
     public MovieEntity ToEntity()
     {
         return new MovieEntity
         {
-            PublicId = Id,
-            Title = Title,
-            Length = Length.HasValue ? Length.Value : 0,
-            Release = Release,
+            PublicId = Id.Value,
+            Title = Title.Value,
+            Length = Length.Value ??  0,
+            Release = Release.Value,
         };
 
     }
 
     public void ToEntity(MovieEntity entity)
     { 
-        entity.PublicId = Id;
-        entity.Title = Title;
-        entity.Length = Length.HasValue ? Length.Value : 0;
-        entity.Release = Release;
+        entity.PublicId = Id.Value;
+        entity.Title = Title.Value;
+        entity.Length = Length.Value ?? 0;
+        entity.Release = Release.Value;
 
+    }
+
+    private void AddValidators()
+    {
+        this.Title.Validations.Add(new IsNotNullOrEmptyRule<string>
+        { 
+        ValidationMessage = "Title is required field."
+        });
+        this.Length.Validations.Add(new NullableIntegerRule<uint?>
+        {
+            ValidationMessage = "Length is required field."
+        });
     }
 }

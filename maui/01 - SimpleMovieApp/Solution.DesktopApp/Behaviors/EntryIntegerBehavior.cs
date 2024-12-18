@@ -22,10 +22,11 @@ public class EntryIntegerBehavior : Behavior<Entry>
 
         if (string.IsNullOrEmpty(e.NewTextValue))
         {
+            entry!.Text = null;
             return;
         }
 
         bool isValid = int.TryParse(e.NewTextValue, out int result);
-        entry.Text = isValid ? result.ToString() : e.OldTextValue;
+        entry!.Text = isValid ? result.ToString() : e.OldTextValue;
     }
 }
