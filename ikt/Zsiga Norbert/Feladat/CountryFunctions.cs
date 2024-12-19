@@ -44,9 +44,49 @@ public static class CountryFunctions
 
         uint selectedCountryId =await GetCountryIdAsync(dbContext);
 
-        if (selectedCountryId == 0) { return; }
+        if (selectedCountryId == 0) 
+        { 
+            return; 
+        }
 
         countries.First(x => x.Id == selectedCountryId).Name = ExtendentConsole.ReadString("Kérem a módosított ország nevet: ");
         await dbContext.SaveChangesAsync();
+    }
+
+    public static async Task<uint> UseNewOrExistingCountryAsync(ApplicationDbContext dbContext)
+    {
+        int countryOption = Menus.ReusableMenu(["Meglévő ország használata", "Új ország hozzáadása"]);
+        uint countryId;
+        uint cityId;
+        uint streetId;
+
+        if (countryOption == -1)
+        {
+            return 0;
+        }
+        else if (countryOption == 0)
+        {
+            countryId = await GetCountryIdAsync(dbContext);
+
+            if (countryId == 0) 
+            {
+                return 0; 
+            }
+
+            streetId = await CityFunctions.UseNewOrExistingCityAsync(dbContext, countryId);
+        }
+        else
+        {
+            await AddCountryAsync(dbContext);
+            countryId = dbContext.Countries.OrderBy(x => x.Id).Last().Id;
+
+            await CityFunctions.AddCityAsync(dbContext, countryId);
+            cityId = dbContext.Cities.OrderBy(x => x.Id).Last().Id;
+
+            await StreetFunctions.AddStreetAsync(dbContext, cityId);
+            streetId = dbContext.Streets.OrderBy(x => x.Id).Last().Id;
+        }
+
+        return streetId;
     }
 }

@@ -2,5 +2,5 @@
 
 public interface IMovieService
 {
-    Task<ErrorOr<MovieModel>> CreateAsync(MovieModel movie);
+	Task<ErrorOr<MovieModel>> CreateAsync(MovieModel movie);
 }

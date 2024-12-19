@@ -8,7 +8,10 @@ public static class AddressFunctions
         Console.WriteLine("Válasston lehetőséget: ");
         int input = Menus.ReusableMenu(["Meglévő cím használata", "Új cím hozzáadása"]);
 
-        if (input == -1) { return 0; }
+        if (input == -1) 
+        { 
+            return 0; 
+        }
 
         uint selectedAddressId = 0;
 
@@ -21,15 +24,8 @@ public static class AddressFunctions
                 }
             case 1:
                 {
-                    if (await AddAddressCompleteAsync(dbContext))
-                    {
-                        selectedAddressId = dbContext.Addresses.OrderBy(x => x.Id).Last().Id;
-                    }
-                    else
-                    {
-                        selectedAddressId = 0;
-                    }
-                    break;
+                    selectedAddressId = await AddAddressCompleteAsync(dbContext);
+                    break ;
                 }
         }
         return selectedAddressId;
@@ -42,7 +38,10 @@ public static class AddressFunctions
         Console.Clear();
         int selectedAddress = Menus.ReusableMenu(addressNames);
 
-        if (selectedAddress == -1) { return 0; }
+        if (selectedAddress == -1) 
+        { 
+            return 0; 
+        }
 
         uint AddressId = addresses[selectedAddress].Id;
 
@@ -52,93 +51,38 @@ public static class AddressFunctions
     public static async Task<uint> GetAddressIdCompleteAsync(ApplicationDbContext dbContext)
     {
         uint countryId = await CountryFunctions.GetCountryIdAsync(dbContext);
-        if (countryId == 0) return 0;
+        if (countryId == 0)
+        { 
+            return 0;
+        }
 
         uint cityId = await CityFunctions.GetCityIdAsync(dbContext, countryId);
-        if (cityId == 0) return 0;
+        if (cityId == 0) 
+        { 
+            return 0; 
+        }
 
         uint streetId = await StreetFunctions.GetStreetIdAsync(dbContext, cityId);
-        if (streetId == 0) return 0;
+        if (streetId == 0) 
+        { 
+            return 0; 
+        }
 
         uint addressId = await GetAddressIdAsync(dbContext, streetId);
         return addressId;
     }
-    public static async Task<bool> AddAddressCompleteAsync(ApplicationDbContext dbContext)
+    public static async Task<uint> AddAddressCompleteAsync(ApplicationDbContext dbContext)
     {
-        int countryOption = Menus.ReusableMenu(["Meglévő ország használata", "Új ország hozzáadása"]);
-        int cityOption;
-        int streetOption;
-        uint countryId;
-        uint cityId;
-        uint streetId;
+        uint streetId = await CountryFunctions.UseNewOrExistingCountryAsync(dbContext);
 
-        if (countryOption == -1)
-        {
-            return false;
-        }
-        else if (countryOption == 0)
+        if (streetId == 0) 
         { 
-            countryId = await CountryFunctions.GetCountryIdAsync(dbContext);
-
-            if(countryId == 0) { return false; }
-
-            cityOption = Menus.ReusableMenu(["Meglévő város használata", "Új város hozzáadása"]);
-
-            if (cityOption == -1)
-            {
-                return false;
-            }
-
-            else if (cityOption == 0)
-            {
-                cityId = await CityFunctions.GetCityIdAsync(dbContext, countryId);
-
-                if (cityId == 0) { return false; }
-
-                streetOption = Menus.ReusableMenu(["Meglévő utca használata", "Új utca hozzáadása"]);
-
-                if (streetOption == -1)
-                {
-                    return false;
-                }
-
-                else if (streetOption == 0)
-                {
-                    streetId = await StreetFunctions.GetStreetIdAsync(dbContext, cityId);
-                    if (streetId == 0) { return false; }
-                }
-
-                else
-                {
-                    await StreetFunctions.AddStreetAsync(dbContext, cityId);
-                    streetId = dbContext.Streets.OrderBy(x => x.Id).Last().Id;
-                }
-            }
-
-            else
-            {
-                await CityFunctions.AddCityAsync(dbContext, countryId);
-                cityId = dbContext.Cities.OrderBy(x => x.Id).Last().Id;
-
-                await StreetFunctions.AddStreetAsync(dbContext, cityId);
-                streetId = dbContext.Streets.OrderBy(x => x.Id).Last().Id;
-            }
-
-        }
-        else
-        {
-            await CountryFunctions.AddCountryAsync(dbContext);
-            countryId = dbContext.Countries.OrderBy(x => x.Id).Last().Id;
-
-            await CityFunctions.AddCityAsync(dbContext, countryId);
-            cityId = dbContext.Cities.OrderBy(x => x.Id).Last().Id;
-
-            await StreetFunctions.AddStreetAsync(dbContext, cityId);
-            streetId = dbContext.Streets.OrderBy(x => x.Id).Last().Id;
+            return 0; 
         }
 
         await AddAddressAsync(dbContext, streetId);
-        return true;
+        uint selectedAddressId = dbContext.Addresses.OrderBy(x => x.Id).Last().Id;
+        return selectedAddressId;
     }
     public static async Task AddAddressAsync(ApplicationDbContext dbContext, uint streetId)
     {
@@ -153,7 +97,10 @@ public static class AddressFunctions
         Console.Clear();
         uint selectedAddressId =await GetAddressIdCompleteAsync(dbContext);
 
-        if (selectedAddressId == 0) { return; }
+        if (selectedAddressId == 0) 
+        { 
+            return; 
+        }
 
         AddressEntity address = await dbContext.Addresses.FirstAsync(x => x.Id == selectedAddressId);
 
@@ -167,7 +114,10 @@ public static class AddressFunctions
         Console.Clear();
         uint selectedAddressId =await GetAddressIdCompleteAsync(dbContext);
 
-        if (selectedAddressId == 0) { return; }
+        if (selectedAddressId == 0) 
+        { 
+            return; 
+        }
 
         addresses.First(x => x.Id == selectedAddressId).Address = ExtendentConsole.ReadString("Kérem az módosított címet: ");
         await dbContext.SaveChangesAsync();

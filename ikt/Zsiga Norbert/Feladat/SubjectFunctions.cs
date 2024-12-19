@@ -8,7 +8,10 @@ public static class SubjectFunctions
         Console.WriteLine("Válasston lehetőséget: ");
         int input = Menus.ReusableMenu(["Meglévő tantárgy használata", "Új tantárgy hozzáadása"]);
 
-        if (input == -1) { return 0; }
+        if (input == -1) 
+        { 
+            return 0; 
+        }
         uint selectedSubjectId = 0;
 
         switch (input)

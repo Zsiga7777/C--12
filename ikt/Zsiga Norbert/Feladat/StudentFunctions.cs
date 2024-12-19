@@ -2,6 +2,8 @@
 
 public static class StudentFunctions
 {
+    private static DateTime minBornDate = DataService.CreateCustomDate(DateTime.Now.Year - 80, DateTime.Now.Month, DateTime.Now.Day);
+    private static DateTime maxBornDate = DataService.CreateCustomDate(DateTime.Now.Year - 6, DateTime.Now.Month, DateTime.Now.Day);
     public static async Task WriteStudentData(ApplicationDbContext dbContext)
     {
         var studentsData = await dbContext.Students.Include(x => x.Address)
@@ -11,12 +13,15 @@ public static class StudentFunctions
                                                     .ThenInclude(x => x.Subject).ToListAsync();
         uint studentId = await GetStudentIdAsync(dbContext);
 
-        if (studentId == 0) return;
+        if (studentId == 0)  
+        {
+            return;
+        }
 
         StudentEntity student = studentsData.First(x => x.EducationalID == studentId);
 
         Console.Clear();
-        string stringifiedMarks = DataService.PutEveryMarkIntoString(student);
+        string stringifiedMarks = MarkFunctions.PutEveryMarkIntoString(student);
         Console.WriteLine($"neve: {student.Name}\nanyja neve: {student.MothersName}\nszületési ideje: {student.BirthDay}\nlakhelye:{student.Address.Street.City.Name} {student.Address.Street.Name} {student.Address.Address}\nTantárgyai:\n{stringifiedMarks} ");
         
         await Task.Delay(10000);
@@ -28,7 +33,10 @@ public static class StudentFunctions
 
         int temp = Menus.ReusableMenu(await dbContext.Students.Select(x => x.Name).ToListAsync());
 
-        if (temp == -1) return 0;
+        if (temp == -1) 
+        { 
+            return 0; 
+        }
 
         return dbContext.Students.ElementAt(temp).EducationalID;
     }
@@ -36,7 +44,10 @@ public static class StudentFunctions
     public static async Task<string> ReadStudentNameAsync(ApplicationDbContext dbContext)
     {
         string input = ExtendentConsole.ReadString("Kérem a tanuló nevét: ");
-        if (input.ToLower() == "e") { return input; }
+        if (input.ToLower() == "e") 
+        { 
+            return input; 
+        }
 
         int counter = 0;
         while (await dbContext.Students.AnyAsync(x => x.Name == input))
@@ -68,13 +79,19 @@ public static class StudentFunctions
 
             uint address = await AddressFunctions.SelectNewOrExistingAddressCompleteAsync(dbContext);
 
-            if (address == 0) return;
+        Console.Clear();
+        if (address == 0) 
+        { 
+            return; 
+        }
+
             var student = new StudentEntity()
             {
                 Name = input,
-                BirthDay = ExtendentConsole.ReadDateTime("Kérem a születési dátumát: ", DateTime.Parse($"{DateTime.Now.Year -25}-{DateTime.Now.Month}-{DateTime.Now.Day}", DateTime.Parse($"{DateTime.Now.Year - 6}-{DateTime.Now.Month}-{DateTime.Now.Day}"),
+                BirthDay = ExtendentConsole.ReadDateTime($"Kérem a születési dátumát({minBornDate} és {maxBornDate} között): ", minBornDate, maxBornDate),
                 MothersName = ExtendentConsole.ReadString("Kérem az anyja nevét: "),
                 AddressId = address
+                
             };
 
             await dbContext.Students.AddAsync(student);
@@ -92,7 +109,10 @@ public static class StudentFunctions
             Console.Clear();
 
             int modificationType = Menus.ReusableMenu(["Név módosítás", "Születésnap módosítása", "Anyja nevének módosítása", "Lakcím módosítás"]);
-            if (modificationType == -1) return;
+        if (modificationType == -1) 
+        { 
+            return; 
+        }
 
             string newData;
             var student = await dbContext.Students.FirstAsync(x => x.EducationalID == studentNeedsModifyId);
@@ -111,7 +131,7 @@ public static class StudentFunctions
                     }
                 case 1:
                     {
-                        student.BirthDay = ExtendentConsole.ReadDateTime("Kérem az új születésnapot: ", DateTime.Now);
+                        student.BirthDay = ExtendentConsole.ReadDateTime($"Kérem az új születésnapot({minBornDate} és {maxBornDate} között): ", minBornDate, maxBornDate);
                         break;
                     }
                 case 2:
@@ -123,7 +143,10 @@ public static class StudentFunctions
                     {
                         uint newAddressId = await AddressFunctions.SelectNewOrExistingAddressCompleteAsync(dbContext);
 
-                        if (newAddressId == 0) { return; }
+                        if (newAddressId == 0) 
+                        { 
+                            return; 
+                        }
 
                         student.AddressId = newAddressId;
                         break;

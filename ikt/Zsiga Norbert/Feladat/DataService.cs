@@ -1,20 +1,11 @@
-﻿namespace Feladat;
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace Feladat;
 
 public static class DataService
 {
-    public static string PutEveryMarkIntoString(StudentEntity student)
-    {
-        var groupedMarks = student.Marks.GroupBy(x => x.Subject.Name);
+    
 
-        StringBuilder sb = new StringBuilder();
-        foreach (var subject in groupedMarks)
-        {
-            sb.AppendLine($"\n{subject.Key}: ");
-            foreach (var mark in subject)
-            {
-                sb.AppendLine($"- {mark.Date} : {mark.Mark}");
-            }
-        }
-        return sb.ToString();
-    }
+    public static DateTime CreateCustomDate(int year, string monthAndDay) => DateTime.Parse($"{year}-{monthAndDay}");
+    public static DateTime CreateCustomDate(int year, int month, int day) => DateTime.Parse($"{year}-{month}-{day}");
 }

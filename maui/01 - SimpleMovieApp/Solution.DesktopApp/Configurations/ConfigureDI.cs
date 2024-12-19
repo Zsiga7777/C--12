@@ -1,5 +1,4 @@
-﻿
-namespace Solution.DesktopApp.Configurations;
+﻿namespace Solution.DesktopApp.Configurations;
 
 public static class ConfigureDI
 {
