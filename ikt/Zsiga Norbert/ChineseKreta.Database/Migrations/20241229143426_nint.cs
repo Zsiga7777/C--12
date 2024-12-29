@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ChineseKreta.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class nint : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -100,8 +100,7 @@ namespace ChineseKreta.Database.Migrations
                 name: "Student",
                 columns: table => new
                 {
-                    EducationalID = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EducationalID = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     BirthDay = table.Column<DateTime>(type: "datetime2", nullable: false),
                     MothersName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
@@ -114,8 +113,7 @@ namespace ChineseKreta.Database.Migrations
                         name: "FK_Student_Address_AddressId",
                         column: x => x.AddressId,
                         principalTable: "Address",
-                        principalColumn: "Id",
-                        onDelete : ReferentialAction.SetNull);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -126,7 +124,7 @@ namespace ChineseKreta.Database.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Mark = table.Column<long>(type: "bigint", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    StudentId = table.Column<long>(type: "bigint", nullable: true),
+                    StudentId = table.Column<decimal>(type: "decimal(20,0)", nullable: true),
                     SubjectId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -136,8 +134,7 @@ namespace ChineseKreta.Database.Migrations
                         name: "FK_Mark_Student_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Student",
-                        principalColumn: "EducationalID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "EducationalID");
                     table.ForeignKey(
                         name: "FK_Mark_Subject_SubjectId",
                         column: x => x.SubjectId,

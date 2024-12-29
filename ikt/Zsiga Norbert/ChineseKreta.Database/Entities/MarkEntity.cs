@@ -14,7 +14,7 @@ public class MarkEntity
     [Required]
     public DateTime Date { get; set; }
 
-    public uint? StudentId { get; set; }
+    public ulong? StudentId { get; set; }
 
     public virtual StudentEntity? Student { get; set; }
 

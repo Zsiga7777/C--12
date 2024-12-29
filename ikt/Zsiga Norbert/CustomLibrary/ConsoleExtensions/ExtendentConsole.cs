@@ -64,7 +64,20 @@
         return number;
     }
 
+    public static ulong ReadUlong(string promt, ulong min, ulong max)
+    {
+        bool isNumber = false;
+        ulong number = 0;
+        do
+        {
+            Console.Write($"{promt}");
+            string text = Console.ReadLine();
+            isNumber = ulong.TryParse(text, out number);
+        }
+        while (!isNumber || min > number || max < number);
 
+        return number;
+    }
 
     public static double ReadDouble(string promt)
         {

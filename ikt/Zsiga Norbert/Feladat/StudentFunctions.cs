@@ -11,7 +11,7 @@ public static class StudentFunctions
                                                     .ThenInclude(x => x.City)
                                                     .Include(x => x.Marks)
                                                     .ThenInclude(x => x.Subject).ToListAsync();
-        uint studentId = await GetStudentIdAsync(dbContext);
+        ulong studentId = await GetStudentIdAsync(dbContext);
 
         if (studentId == 0)  
         {
@@ -22,12 +22,12 @@ public static class StudentFunctions
 
         Console.Clear();
         string stringifiedMarks = MarkFunctions.PutEveryMarkIntoString(student);
-        Console.WriteLine($"neve: {student.Name}\nanyja neve: {student.MothersName}\nszületési ideje: {student.BirthDay}\nlakhelye:{student.Address.Street.City.Name} {student.Address.Street.Name} {student.Address.Address}\nTantárgyai:\n{stringifiedMarks} ");
+        Console.WriteLine($"neve: {student.Name}\noktatási azonosítója: {student.EducationalID}\nanyja neve: {student.MothersName}\nszületési ideje: {student.BirthDay}\nlakhelye:{student.Address.Street.City.Name} {student.Address.Street.Name} {student.Address.Address}\nTantárgyai:\n{stringifiedMarks} ");
         
         await Task.Delay(10000);
     }
 
-    public static async Task<uint> GetStudentIdAsync(ApplicationDbContext dbContext)
+    public static async Task<ulong> GetStudentIdAsync(ApplicationDbContext dbContext)
     {
         Console.WriteLine("\nA tanulók nevei: ");
 
@@ -67,6 +67,18 @@ public static class StudentFunctions
         return input;
     }
 
+    public static async Task<ulong> ReadStudentIdAsync(ApplicationDbContext dbContext)
+    {
+        ulong input = 0;
+
+        do
+        {         
+            input = ExtendentConsole.ReadUlong("Kérem a oktatási azonosítóját(11 számjegy):  ", 9999999999, 100000000000);
+        } while (await dbContext.Students.AnyAsync(x => x.EducationalID == input));
+            
+        return input;
+    }
+
     public static async Task AddNewStudentsAsync(ApplicationDbContext dbContext)
     {
             Console.Clear();
@@ -76,6 +88,8 @@ public static class StudentFunctions
             {
                 return;
             }
+
+            ulong id = await ReadStudentIdAsync(dbContext);
 
             uint address = await AddressFunctions.SelectNewOrExistingAddressCompleteAsync(dbContext);
 
@@ -87,6 +101,7 @@ public static class StudentFunctions
 
             var student = new StudentEntity()
             {
+                EducationalID = id,
                 Name = input,
                 BirthDay = ExtendentConsole.ReadDateTime($"Kérem a születési dátumát({minBornDate} és {maxBornDate} között): ", minBornDate, maxBornDate),
                 MothersName = ExtendentConsole.ReadString("Kérem az anyja nevét: "),
@@ -100,7 +115,7 @@ public static class StudentFunctions
 
     public static async Task ModifyStudentsDataAsync(ApplicationDbContext dbContext)
     {
-        uint studentNeedsModifyId = await GetStudentIdAsync(dbContext);
+        ulong studentNeedsModifyId = await GetStudentIdAsync(dbContext);
         if (studentNeedsModifyId == 0)
         {
             return;
@@ -160,7 +175,7 @@ public static class StudentFunctions
     {
             Console.Clear();
 
-            uint studentNeedsDeleteID = await GetStudentIdAsync(dbContext);
+            ulong studentNeedsDeleteID = await GetStudentIdAsync(dbContext);
             if (studentNeedsDeleteID == 0)
             {
                 return;

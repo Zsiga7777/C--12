@@ -4,8 +4,10 @@
 public class StudentEntity
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public uint EducationalID { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
+    [Range(9999999999,100000000000)]
+
+    public ulong EducationalID { get; set; }
 
     [Required]
     [StringLength(50)]
@@ -21,4 +23,5 @@ public class StudentEntity
     public virtual AddressEntity? Address { get; set; }
 
     public ICollection<MarkEntity> Marks { get; set; }
+
 }

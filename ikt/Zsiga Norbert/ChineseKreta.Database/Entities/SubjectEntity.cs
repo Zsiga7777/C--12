@@ -13,4 +13,5 @@ public class SubjectEntity
     public string Name { get; set; }
 
     public ICollection<MarkEntity> Marks { get; set; }
+
 }

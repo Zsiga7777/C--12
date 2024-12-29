@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChineseKreta.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241211161749_init")]
-    partial class init
+    [Migration("20241229143426_nint")]
+    partial class nint
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -103,8 +103,8 @@ namespace ChineseKreta.Database.Migrations
                     b.Property<long>("Mark")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("StudentId")
-                        .HasColumnType("bigint");
+                    b.Property<decimal?>("StudentId")
+                        .HasColumnType("decimal(20,0)");
 
                     b.Property<long>("SubjectId")
                         .HasColumnType("bigint");
@@ -143,11 +143,8 @@ namespace ChineseKreta.Database.Migrations
 
             modelBuilder.Entity("ChineseKreta.Database.Entities.StudentEntity", b =>
                 {
-                    b.Property<long>("EducationalID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("EducationalID"));
+                    b.Property<decimal>("EducationalID")
+                        .HasColumnType("decimal(20,0)");
 
                     b.Property<long?>("AddressId")
                         .HasColumnType("bigint");

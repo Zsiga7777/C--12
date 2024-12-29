@@ -25,7 +25,7 @@ public static class MarkFunctions
     {
         do
         {
-            uint studentId = await StudentFunctions.GetStudentIdAsync(dbContext);
+            ulong studentId = await StudentFunctions.GetStudentIdAsync(dbContext);
             if (studentId == 0) 
             { 
                 return; 
