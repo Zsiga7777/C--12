@@ -187,21 +187,6 @@ namespace ChineseKreta.Database.Migrations
                     b.ToTable("Subject");
                 });
 
-            modelBuilder.Entity("StudentEntitySubjectEntity", b =>
-                {
-                    b.Property<decimal>("StudentsEducationalID")
-                        .HasColumnType("decimal(20,0)");
-
-                    b.Property<long>("SubjectsId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("StudentsEducationalID", "SubjectsId");
-
-                    b.HasIndex("SubjectsId");
-
-                    b.ToTable("StudentEntitySubjectEntity");
-                });
-
             modelBuilder.Entity("ChineseKreta.Database.Entities.AddressEntity", b =>
                 {
                     b.HasOne("ChineseKreta.Database.Entities.StreetEntity", "Street")
@@ -261,21 +246,6 @@ namespace ChineseKreta.Database.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Address");
-                });
-
-            modelBuilder.Entity("StudentEntitySubjectEntity", b =>
-                {
-                    b.HasOne("ChineseKreta.Database.Entities.StudentEntity", null)
-                        .WithMany()
-                        .HasForeignKey("StudentsEducationalID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ChineseKreta.Database.Entities.SubjectEntity", null)
-                        .WithMany()
-                        .HasForeignKey("SubjectsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("ChineseKreta.Database.Entities.AddressEntity", b =>

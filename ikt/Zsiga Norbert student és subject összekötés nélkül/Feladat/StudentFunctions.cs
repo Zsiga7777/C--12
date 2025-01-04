@@ -9,9 +9,8 @@ public static class StudentFunctions
         var studentsData = await dbContext.Students.Include(x => x.Address)
                                                     .ThenInclude(x => x.Street)
                                                     .ThenInclude(x => x.City)
-                                                    .Include(x => x.Subjects)
                                                     .Include(x => x.Marks)
-                                                    .ToListAsync();
+                                                    .ThenInclude(x => x.Subject).ToListAsync();
         ulong studentId = await GetStudentIdAsync(dbContext);
 
         if (studentId == 0)  
@@ -130,7 +129,7 @@ public static class StudentFunctions
        
             Console.Clear();
 
-            int modificationType = Menus.ReusableMenu(["Név módosítás", "Születésnap módosítása", "Anyja nevének módosítása", "Lakcím módosítás", "tantárgy hozzáadása a diákhoz", "tantárgy törlése a diáktól"]);
+            int modificationType = Menus.ReusableMenu(["Név módosítás", "Születésnap módosítása", "Anyja nevének módosítása", "Lakcím módosítás"]);
         if (modificationType == -1) 
         { 
             return; 
@@ -173,16 +172,6 @@ public static class StudentFunctions
                         student.AddressId = newAddressId;
                         break;
                     }
-            case 4:
-                {
-                    await SubjectFunctions.AddSubjectToSpecificStudentAsync(dbContext, studentNeedsModifyId);
-                    break;
-                }
-                case 5: 
-                {
-                    await SubjectFunctions.DeleteSubjectFromStudentAsync(dbContext, studentNeedsModifyId);
-                    break;
-                }
             }
             await dbContext.SaveChangesAsync();
 

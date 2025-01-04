@@ -2,11 +2,11 @@
 
 public static class SubjectFunctions
 {
-    public static async Task<uint> SelectNewOrExistingSubjectAsync(ApplicationDbContext dbContext)
+    public static async Task<uint> SelectNewOrExistingSubjectAsync(ApplicationDbContext dbContext, ulong studentId)
     {
         Console.Clear();
         Console.WriteLine("Válasston lehetőséget: ");
-        int input = Menus.ReusableMenu(["Meglévő tantárgy használata", "Új tantárgy hozzáadása"]);
+        int input = Menus.ReusableMenu(["Meglévő tantárgy használata a tanulónál", "Adatbázisban létező tantárgy hozzáadása a tanulóhoz", "új tantárgy hozzáadása a tanulóhoz"]);
 
         if (input == -1) 
         { 
@@ -18,18 +18,20 @@ public static class SubjectFunctions
         {
             case 0:
                 {
-                    selectedSubjectId = await GetSubjectId(dbContext);
+                    selectedSubjectId = await GetSubjectIdForSpecificStudentAsync(dbContext, studentId);
                     break;
                 }
             case 1:
                 {
-                    if (await AddNewSubjectAsync(dbContext))
+                    selectedSubjectId = await AddSubjectToSpecificStudentAsync(dbContext, studentId);
+                    break;
+                }
+            case 2:
+                {
+                    if (await AddNewSubjectToSpecificStudentAsync(dbContext, studentId))
                     {
-                        selectedSubjectId = dbContext.Subjects.OrderBy(x => x.Id).Last().Id;
-                    }
-                    else
-                    {
-                        selectedSubjectId = 0;
+                        List<SubjectEntity> subjects = await dbContext.Subjects.OrderBy(x => x.Id).ToListAsync();
+                        selectedSubjectId = subjects.Last().Id;
                     }
                     break;
                 }
@@ -53,15 +55,36 @@ public static class SubjectFunctions
 
         return subjects[indexOfSubjectName].Id;
     }
+
+    public static async Task<uint> GetSubjectIdForSpecificStudentAsync(ApplicationDbContext dbContext, ulong studentId)
+    {
+        Console.Clear();
+        Console.WriteLine("\nA tantárgyak: ");
+
+        StudentEntity student = await dbContext.Students.Include(x => x.Subjects).FirstAsync(x => x.EducationalID == studentId);
+        List<SubjectEntity> subjects = student.Subjects.ToList();
+
+        List<string> subjectNames = subjects.Select(x => x.Name).ToList();
+        int indexOfSubjectName = Menus.ReusableMenu(subjectNames);
+
+        if (indexOfSubjectName == -1)
+        {
+            return 0;
+        }
+
+        return subjects[indexOfSubjectName].Id;
+    }
     public static async Task<bool> AddNewSubjectAsync(ApplicationDbContext dbContext)
     {
         string input = null;
         SubjectEntity subject;
 
         Console.Clear();
-        input = ExtendentConsole.ReadString("Kérem a tantárgy nevét: ").ToLower();
-        if (input.ToLower() != "e")
+
+        do
         {
+            input = ExtendentConsole.ReadString("Kérem a tantárgy nevét: ").ToLower();
+
             if (!dbContext.Subjects.Any(x => x.Name == input))
             {
                 subject = new SubjectEntity() { Name = input };
@@ -69,11 +92,61 @@ public static class SubjectFunctions
                 await dbContext.SaveChangesAsync();
                 return true;
             }
-        }
+            else
+            {
+                Console.WriteLine("Ilyen tartárgy már létezik.");
+                await Task.Delay(2000);
+            }
+        } while (!(input == "e"));
         return false;
     }
+    public static async Task<uint> AddSubjectToSpecificStudentAsync(ApplicationDbContext dbContext, ulong studentId)
+    {
+        int input = 0;
 
-    public static async Task DeleteSubjectsAsync(ApplicationDbContext dbContext)
+        StudentEntity student = await dbContext.Students.Include(x => x.Subjects).FirstAsync(x => x.EducationalID == studentId);
+        List<SubjectEntity> databaseSubjects = await dbContext.Subjects.ToListAsync();
+
+        Console.Clear();
+
+        input = Menus.ReusableMenu(databaseSubjects.Select(x => x.Name).ToList());
+
+        if (input == -1)
+        {
+            return 0;
+        }
+        if (student.Subjects == null)
+        { 
+            student.Subjects = new List<SubjectEntity>() { databaseSubjects[input] };
+        }
+        else
+        {
+            if (!student.Subjects.Contains(databaseSubjects[input]))
+            { 
+                student.Subjects.Add(databaseSubjects[input]);
+            }
+        }
+        
+        await dbContext.SaveChangesAsync();
+
+        return databaseSubjects[input].Id;
+    }
+
+    public static async Task<bool> AddNewSubjectToSpecificStudentAsync(ApplicationDbContext dbContext, ulong studentId)
+    {
+        bool isNewSubjectAdded = await AddNewSubjectAsync(dbContext);
+        if (isNewSubjectAdded)
+        {
+            StudentEntity student = await dbContext.Students.FirstAsync(x => x.EducationalID == studentId);
+            List<SubjectEntity> subjects = await dbContext.Subjects.OrderBy(x => x.Id).ToListAsync();
+
+            student.Subjects.Add(subjects.Last());
+            await dbContext.SaveChangesAsync();
+        }
+        return isNewSubjectAdded;
+    }
+
+    public static async Task DeleteSubjectAsync(ApplicationDbContext dbContext)
     {
             Console.Clear();
 
@@ -82,9 +155,28 @@ public static class SubjectFunctions
             {
                 return;
             }
+        SubjectEntity subject = await dbContext.Subjects.FirstAsync(x => x.Id == subjectId);
 
-            dbContext.Subjects.Remove(await dbContext.Subjects.FirstAsync(x => x.Id == subjectId));
+            dbContext.Subjects.Remove(subject);
             await dbContext.SaveChangesAsync();
+    }
+
+    public static async Task DeleteSubjectFromStudentAsync(ApplicationDbContext dbContext, ulong studentId)
+    {
+        Console.Clear();
+
+        uint subjectId = await GetSubjectIdForSpecificStudentAsync(dbContext, studentId);
+        if (subjectId == 0)
+        {
+            return;
+        }
+        SubjectEntity subject = await dbContext.Subjects.FirstAsync(x => x.Id == subjectId);
+
+        StudentEntity student = await dbContext.Students.FirstAsync(x => x.EducationalID == studentId);
+        await MarkFunctions.DeleteMarksFromOneSubjectAndOneStudentAsync(dbContext, studentId, subjectId);
+
+        student.Subjects.Remove(subject);
+        await dbContext.SaveChangesAsync();
     }
 
     public static async Task ModifySubjectNameAsync(ApplicationDbContext dbContext)
@@ -103,6 +195,11 @@ public static class SubjectFunctions
         {
             Console.Clear();
             newName = ExtendentConsole.ReadString("Kérem a tantárgy módosított nevét: ").ToLower();
+            if (subjectNames.Any(x => x == newName))
+            {
+                Console.WriteLine("Ilyen tartárgy már létezik.");
+                await Task.Delay(2000);
+            }
         } while (subjectNames.Any(x => x == newName));
 
         subjects[selectedSubjectIndex].Name = newName;

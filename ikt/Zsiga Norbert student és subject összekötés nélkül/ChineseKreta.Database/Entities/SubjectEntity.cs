@@ -14,6 +14,4 @@ public class SubjectEntity
 
     public ICollection<MarkEntity> Marks { get; set; }
 
-    public ICollection<StudentEntity> Students { get; set; }
-
 }

@@ -17,7 +17,6 @@
                     "Jegy hozzáadása",
                     "Jegy módosítása",
                     "Jegy törlése", 
-                    "Tantárgy hozzáadás",
                     "Tantárgy törlése",
                     "Tantárgy módosítása",
                     "Cím törlése",
@@ -89,52 +88,46 @@
                     case 8:
                         {
                             Console.Clear();
-                            await SubjectFunctions.AddNewSubjectAsync(dbContext);
+                            await SubjectFunctions.DeleteSubjectsAsync(dbContext);
                             break;
                         }
                     case 9:
                         {
                             Console.Clear();
-                            await SubjectFunctions.DeleteSubjectAsync(dbContext);
+                            await SubjectFunctions.ModifySubjectNameAsync(dbContext);
                             break;
                         }
                     case 10:
                         {
                             Console.Clear();
-                            await SubjectFunctions.ModifySubjectNameAsync(dbContext);
+                            await AddressFunctions.DeleteAddressAsync(dbContext);
                             break;
                         }
                     case 11:
                         {
                             Console.Clear();
-                            await AddressFunctions.DeleteAddressAsync(dbContext);
+                            await AddressFunctions.ModifyAddressAsync(dbContext);
                             break;
                         }
                     case 12:
                         {
                             Console.Clear();
-                            await AddressFunctions.ModifyAddressAsync(dbContext);
+                            await StreetFunctions.DeleteStreetAsync(dbContext);
                             break;
                         }
                     case 13:
                         {
                             Console.Clear();
-                            await StreetFunctions.DeleteStreetAsync(dbContext);
+                            await StreetFunctions.ModifyStreetAsync(dbContext);
                             break;
                         }
                     case 14:
                         {
                             Console.Clear();
-                            await StreetFunctions.ModifyStreetAsync(dbContext);
-                            break;
-                        }
-                    case 15:
-                        {
-                            Console.Clear();
                             await CityFunctions.ModifyCityAsync(dbContext);
                             break;
                         }
-                    case 16:
+                    case 15:
                         {
                             Console.Clear();
                             await CountryFunctions.ModifyCountryAsync(dbContext);
@@ -217,14 +210,7 @@
                 }
                 else if (keyinfo.Key == ConsoleKey.Enter)
                 {
-                    if (options.Count == 0)
-                    {
-                        return -1;
-                    }
-                    else
-                    { 
-                        return index + pageNumber * 10;
-                     }
+                    return index + pageNumber * 10;
                 }
                 else if (keyinfo.Key == ConsoleKey.E)
                 {

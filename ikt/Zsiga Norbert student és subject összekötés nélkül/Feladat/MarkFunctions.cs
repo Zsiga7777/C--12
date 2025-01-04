@@ -2,9 +2,8 @@
 
 public static class MarkFunctions
 {
- 
-    private static DateTime minDate = DataService.CreateCustomDate((DateTime.Now.Month > 7 ? DateTime.Now.Year : DateTime.Now.Year -1), "09-01");
-    private static DateTime maxDate = DataService.CreateCustomDate((DateTime.Now.Month < 7 ? DateTime.Now.Year  : DateTime.Now.Year +1), "06-15");
+    private static DateTime minDate = DataService.CreateCustomDate(DateTime.Now.Year, "09-01");
+    private static DateTime maxDate = DataService.CreateCustomDate(DateTime.Now.Year + 1, "06-15");
     public static async Task<uint> GetMarkIdAsync(ApplicationDbContext dbContext)
     {
         List<MarkEntity> marks = await dbContext.Marks.Include(x => x.Student).Include(x => x.Subject).ToListAsync();
@@ -32,7 +31,7 @@ public static class MarkFunctions
                 return; 
             }
 
-            uint subjectId = await SubjectFunctions.SelectNewOrExistingSubjectAsync(dbContext, studentId);
+            uint subjectId = await SubjectFunctions.SelectNewOrExistingSubjectAsync(dbContext);
             if (subjectId == 0) 
             { 
                 return; 
@@ -64,16 +63,6 @@ public static class MarkFunctions
         MarkEntity mark = await dbContext.Marks.FirstAsync(x => x.MarkId == SelectedMarkId);
 
         dbContext.Marks.Remove(mark);
-        await dbContext.SaveChangesAsync();
-    }
-
-    public static async Task DeleteMarksFromOneSubjectAndOneStudentAsync(ApplicationDbContext dbContext, ulong studentId, uint subjectId)
-    {
-       List<MarkEntity> marks =await dbContext.Marks.Where(x => x.SubjectId == subjectId && x.StudentId == studentId).ToListAsync();
-        foreach (var mark in marks)
-        {
-            dbContext.Marks.Remove(mark);
-        }
         await dbContext.SaveChangesAsync();
     }
 
@@ -113,13 +102,13 @@ public static class MarkFunctions
 
     public static string PutEveryMarkIntoString(StudentEntity student)
     {
-        List<MarkEntity> marks = student.Marks.ToList();
+        var groupedMarks = student.Marks.GroupBy(x => x.Subject.Name);
 
         StringBuilder sb = new StringBuilder();
-        foreach (SubjectEntity subject in student.Subjects)
+        foreach (var subject in groupedMarks)
         {
-            sb.AppendLine($"\n{subject.Name}: ");
-            foreach (MarkEntity mark in marks.Where(x => x.SubjectId == subject.Id))
+            sb.AppendLine($"\n{subject.Key}: ");
+            foreach (var mark in subject)
             {
                 sb.AppendLine($"- {mark.Date} : {mark.Mark}");
             }
