@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace ChineseKreta.Database.Migrations
+namespace Kreta.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class nint : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -134,10 +134,35 @@ namespace ChineseKreta.Database.Migrations
                         name: "FK_Mark_Student_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Student",
-                        principalColumn: "EducationalID");
+                        principalColumn: "EducationalID",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Mark_Subject_SubjectId",
                         column: x => x.SubjectId,
+                        principalTable: "Subject",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StudentEntitySubjectEntity",
+                columns: table => new
+                {
+                    StudentsEducationalID = table.Column<decimal>(type: "decimal(20,0)", nullable: false),
+                    SubjectsId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StudentEntitySubjectEntity", x => new { x.StudentsEducationalID, x.SubjectsId });
+                    table.ForeignKey(
+                        name: "FK_StudentEntitySubjectEntity_Student_StudentsEducationalID",
+                        column: x => x.StudentsEducationalID,
+                        principalTable: "Student",
+                        principalColumn: "EducationalID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_StudentEntitySubjectEntity_Subject_SubjectsId",
+                        column: x => x.SubjectsId,
                         principalTable: "Subject",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -180,6 +205,11 @@ namespace ChineseKreta.Database.Migrations
                 column: "AddressId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_StudentEntitySubjectEntity_SubjectsId",
+                table: "StudentEntitySubjectEntity",
+                column: "SubjectsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Subject_Name",
                 table: "Subject",
                 column: "Name",
@@ -191,6 +221,9 @@ namespace ChineseKreta.Database.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Mark");
+
+            migrationBuilder.DropTable(
+                name: "StudentEntitySubjectEntity");
 
             migrationBuilder.DropTable(
                 name: "Student");

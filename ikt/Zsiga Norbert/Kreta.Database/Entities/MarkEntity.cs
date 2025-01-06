@@ -1,4 +1,4 @@
-﻿namespace ChineseKreta.Database.Entities;
+﻿namespace Kreta.Database.Entities;
 
 [Table("Mark")]
 public class MarkEntity

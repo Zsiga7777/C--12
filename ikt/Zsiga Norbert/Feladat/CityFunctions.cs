@@ -1,4 +1,4 @@
-﻿namespace Feladat;
+﻿namespace Kreta.ConsoleApp;
 
 public static class CityFunctions
 {

@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ChineseKreta.Database\ChineseKreta.Database.csproj" />
+    <ProjectReference Include="..\Kreta.Database\Kreta.Database.csproj" />
     <ProjectReference Include="..\CustomLibrary\CustomLibrary.csproj" />
   </ItemGroup>
 

@@ -1,6 +1,6 @@
-﻿using ChineseKreta.Database.Entities;
+﻿using Kreta.Database.Entities;
 
-namespace ChineseKreta.Database;
+namespace Kreta.Database;
 
 public class ApplicationDbContext : DbContext
 {
@@ -19,7 +19,7 @@ public class ApplicationDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=ChineseKretaDB;Trusted_Connection=True;MultipleActiveResultSets=True;TrustServerCertificate=True;");
+        optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=KretaDB;Trusted_Connection=True;MultipleActiveResultSets=True;TrustServerCertificate=True;");
     }
 
     protected override void OnModelCreating(ModelBuilder builder)

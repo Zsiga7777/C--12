@@ -1,4 +1,4 @@
-﻿namespace Feladat;
+﻿namespace Kreta.ConsoleApp;
 
 public static class SubjectFunctions
 {
@@ -140,7 +140,19 @@ public static class SubjectFunctions
             StudentEntity student = await dbContext.Students.FirstAsync(x => x.EducationalID == studentId);
             List<SubjectEntity> subjects = await dbContext.Subjects.OrderBy(x => x.Id).ToListAsync();
 
-            student.Subjects.Add(subjects.Last());
+            if (student.Subjects == null)
+            { 
+                student.Subjects= new List<SubjectEntity>()
+                { 
+                    subjects.Last()
+                };
+            }
+            else
+            {
+                student.Subjects.Add(subjects.Last());
+            }
+
+            
             await dbContext.SaveChangesAsync();
         }
         return isNewSubjectAdded;

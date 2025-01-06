@@ -1,5 +1,5 @@
 ﻿
-namespace ChineseKreta.Database.Entities;
+namespace Kreta.Database.Entities;
 
 [Table("City")]
 public class CityEntity

@@ -1,13 +1,13 @@
-﻿namespace Feladat;
+﻿namespace Kreta.ConsoleApp;
 
 public static class MarkFunctions
 {
  
     private static DateTime minDate = DataService.CreateCustomDate((DateTime.Now.Month > 7 ? DateTime.Now.Year : DateTime.Now.Year -1), "09-01");
     private static DateTime maxDate = DataService.CreateCustomDate((DateTime.Now.Month < 7 ? DateTime.Now.Year  : DateTime.Now.Year +1), "06-15");
-    public static async Task<uint> GetMarkIdAsync(ApplicationDbContext dbContext)
+    public static async Task<uint> GetMarkIdAsync(ApplicationDbContext dbContext, ulong studentId, uint subjectId)
     {
-        List<MarkEntity> marks = await dbContext.Marks.Include(x => x.Student).Include(x => x.Subject).ToListAsync();
+        List<MarkEntity> marks = await dbContext.Marks.Where(x => x.StudentId == studentId && x.SubjectId == subjectId).ToListAsync();
         List<string> fullmarks = GetMarksWithEveryProperties(marks);
         
         Console.Clear();
@@ -55,13 +55,25 @@ public static class MarkFunctions
 
     public static async Task DeleteMarkAsync(ApplicationDbContext dbContext)
     {
-        uint SelectedMarkId = await GetMarkIdAsync(dbContext);
-        if (SelectedMarkId == 0) 
+        ulong studentId = await StudentFunctions.GetStudentIdAsync(dbContext);
+        if (studentId == 0)
+        {
+            return;
+        }
+
+        uint subjectId = await SubjectFunctions.GetSubjectIdForSpecificStudentAsync(dbContext, studentId);
+        if (subjectId == 0)
+        {
+            return;
+        }
+
+        uint selectedMarkId = await GetMarkIdAsync(dbContext, studentId, subjectId);
+        if (selectedMarkId == 0) 
         { 
             return;
         }
 
-        MarkEntity mark = await dbContext.Marks.FirstAsync(x => x.MarkId == SelectedMarkId);
+        MarkEntity mark = await dbContext.Marks.FirstAsync(x => x.MarkId == selectedMarkId);
 
         dbContext.Marks.Remove(mark);
         await dbContext.SaveChangesAsync();
@@ -79,7 +91,19 @@ public static class MarkFunctions
 
     public static async Task ModifyMarkAsync(ApplicationDbContext dbContext)
     {
-        uint selectedMarkId = await GetMarkIdAsync(dbContext);
+        ulong studentId = await StudentFunctions.GetStudentIdAsync(dbContext);
+        if (studentId == 0)
+        {
+            return;
+        }
+
+        uint subjectId = await SubjectFunctions.GetSubjectIdForSpecificStudentAsync(dbContext, studentId);
+        if (subjectId == 0)
+        {
+            return;
+        }
+
+        uint selectedMarkId = await GetMarkIdAsync(dbContext, studentId, subjectId);
         if (selectedMarkId == 0) 
         { 
             return; 
@@ -134,7 +158,7 @@ public static class MarkFunctions
 
         foreach (MarkEntity mark in marks)
         {
-            temp = $"{mark.Mark}, {mark.Date}, {mark.Subject.Name}, {mark.Student.Name}";
+            temp = $"{mark.Mark}, {mark.Date}";
             result.Add(temp);
         }
         return result;

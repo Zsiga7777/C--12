@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Feladat", "Feladat\Feladat.csproj", "{7F9F656C-D6B8-436F-AED3-0C85AF023672}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kreta.ConsoleApp", "Feladat\Kreta.ConsoleApp.csproj", "{7F9F656C-D6B8-436F-AED3-0C85AF023672}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomLibrary", "CustomLibrary\CustomLibrary.csproj", "{967A7724-80E9-4F6C-9007-628D8C4F7ECA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChineseKreta.Database", "ChineseKreta.Database\ChineseKreta.Database.csproj", "{683A5B1F-8144-49EC-983B-4293E823C894}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kreta.Database", "Kreta.Database\Kreta.Database.csproj", "{683A5B1F-8144-49EC-983B-4293E823C894}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

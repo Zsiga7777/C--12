@@ -1,5 +1,5 @@
 ﻿
-namespace ChineseKreta.Database.Entities;
+namespace Kreta.Database.Entities;
 [Table("Country")]
 [Index(nameof(Name), IsUnique = true)]
 public class CountryEntity
