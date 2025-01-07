@@ -39,6 +39,38 @@ public static class SubjectFunctions
         return selectedSubjectId;
     }
 
+    public static async Task<uint> AddNewOrExistingSubjectToStudentAsync(ApplicationDbContext dbContext, ulong studentId)
+    {
+        Console.Clear();
+        Console.WriteLine("Válasston lehetőséget: ");
+        int input = Menus.ReusableMenu(["Adatbázisban létező tantárgy hozzáadása a tanulóhoz", "új tantárgy hozzáadása a tanulóhoz"]);
+
+        if (input == -1)
+        {
+            return 0;
+        }
+        uint selectedSubjectId = 0;
+
+        switch (input)
+        {
+            case 0:
+                {
+                    selectedSubjectId = await AddSubjectToSpecificStudentAsync(dbContext, studentId);
+                    break;
+                }
+            case 1:
+                {
+                    if (await AddNewSubjectToSpecificStudentAsync(dbContext, studentId))
+                    {
+                        List<SubjectEntity> subjects = await dbContext.Subjects.OrderBy(x => x.Id).ToListAsync();
+                        selectedSubjectId = subjects.Last().Id;
+                    }
+                    break;
+                }
+        }
+        return selectedSubjectId;
+    }
+
     public static async Task<uint> GetSubjectId(ApplicationDbContext dbContext)
     {
         Console.Clear();
@@ -217,4 +249,5 @@ public static class SubjectFunctions
         subjects[selectedSubjectIndex].Name = newName;
         await dbContext.SaveChangesAsync();
     }
+
 }

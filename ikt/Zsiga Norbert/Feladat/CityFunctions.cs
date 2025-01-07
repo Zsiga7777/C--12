@@ -4,31 +4,38 @@ public static class CityFunctions
 {
     public static async Task AddCityAsync(ApplicationDbContext dbContext, uint counryId)
     {
-        int temp = 0;
         List<CityEntity> cities = await dbContext.Cities.ToListAsync();
 
-        do
-        {
-            Console.Clear();
-            temp = ExtendentConsole.ReadInteger(0, "Kérem az új város irányító számát: ");
-            if (cities.Any(x => x.Id == temp))
-            {
-                Console.WriteLine("Ilyen postakód már létezik.");
-                await Task.Delay(2000);
-            }
-
-        } while (cities.Any(x => x.Id == temp));
+        uint postalCode = await ReadPostalCodeAsync(cities);
 
         CityEntity city = new CityEntity() 
         { 
             Name = ExtendentConsole.ReadString("Kérem az új város nevét: "), 
-            CountryId = counryId, Id = (uint)temp 
+            CountryId = counryId, 
+            Id = postalCode 
         };
 
         await dbContext.Cities.AddAsync(city);
         await dbContext.SaveChangesAsync();
     }
 
+    public static async Task<uint> ReadPostalCodeAsync(List<CityEntity> cities)
+    {
+        int postalCode = 0;
+        do
+        {
+            Console.Clear();
+            postalCode = ExtendentConsole.ReadInteger(0, "Kérem az új város irányító számát: ");
+            if (cities.Any(x => x.Id == postalCode))
+            {
+                Console.WriteLine("Ilyen postakód már létezik.");
+                await Task.Delay(2000);
+            }
+
+        } while (cities.Any(x => x.Id == postalCode));
+
+       return (uint)postalCode;
+    }
     public static async Task<uint> GetCityIdAsync(ApplicationDbContext dbContext, uint countryId)
     {
         List<CityEntity> cities = await dbContext.Cities.Where(x => x.CountryId == countryId).ToListAsync();

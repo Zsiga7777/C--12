@@ -60,7 +60,7 @@ public static class StudentFunctions
             }
             else
             {
-                input = input.Remove(counter);
+                input = input.Split($"{counter}")[0];
                 counter++;
                 input = input + $"{counter}";
             }
@@ -175,7 +175,7 @@ public static class StudentFunctions
                     }
             case 4:
                 {
-                    await SubjectFunctions.AddSubjectToSpecificStudentAsync(dbContext, studentNeedsModifyId);
+                    await SubjectFunctions.AddNewOrExistingSubjectToStudentAsync(dbContext, studentNeedsModifyId);
                     break;
                 }
                 case 5: 
