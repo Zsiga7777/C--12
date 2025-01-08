@@ -59,7 +59,7 @@ public static class StudentFunctions
             }
             else
             {
-                input = input.Remove(counter);
+                input = input.Split($"{counter}")[0];
                 counter++;
                 input = input + $"{counter}";
             }

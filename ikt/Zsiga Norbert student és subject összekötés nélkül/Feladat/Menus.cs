@@ -9,23 +9,64 @@
             {
 
                 Console.WriteLine("A rendszer lehetőségei:");
-                int input = ReusableMenu(["Tanuló adat kiírása",
-                    "Tanulók neveinek kiírása",
-                    "Tanuló hozzáadása",
-                    "Tanuló módosítása",
-                    "Tanuló törlése", 
-                    "Jegy hozzáadása",
-                    "Jegy módosítása",
-                    "Jegy törlése", 
-                    "Tantárgy törlése",
-                    "Tantárgy módosítása",
-                    "Cím törlése",
-                    "Cím módosítása",
-                    "Utca törlése",
-                    "Utca módosítása",
-                    "Város módosítása",
-                    "Ország módosítása",
+                int input = ReusableMenu(["Tanuló kezelése",
+                "jegyek kezelése",
+                "tantárgyak kezelése",
+                "lakcímek kezelése"
                 ]);
+
+                switch (input)
+                {
+                    case -1:
+                        {
+                            endOfWork = true;
+                            break;
+                        }
+                    case 0:
+                        {
+                            Console.Clear();
+                            await StudentMenuAsync(dbContext);
+                            break;
+                        }
+                    case 1:
+                        {
+
+                            Console.Clear();
+                            await MarkMenuAsync(dbContext);
+                            break;
+                        }
+
+                    case 2:
+                        {
+                            Console.Clear();
+                            await SubjectMenuAsync(dbContext);
+                            break;
+                        }
+                    case 3:
+                        {
+                            Console.Clear();
+                            await LocationMenuAsync(dbContext);
+                            break;
+                        }
+
+                }
+
+            }
+            while (!endOfWork);
+        }
+        public static async Task StudentMenuAsync(ApplicationDbContext dbContext)
+        {
+            bool endOfWork = false;
+            do
+            {
+
+                Console.WriteLine("A rendszer lehetőségei:");
+                int input = ReusableMenu(["Tanuló adat kiírása",
+                "Tanulók neveinek kiírása",
+                "Tanuló hozzáadása",
+                "Tanuló módosítása",
+                "Tanuló törlése",
+            ]);
 
                 switch (input)
                 {
@@ -57,7 +98,7 @@
                     case 3:
                         {
                             Console.Clear();
-                           
+
                             await StudentFunctions.ModifyStudentsDataAsync(dbContext);
                             break;
                         }
@@ -67,67 +108,147 @@
                             await StudentFunctions.DeleteStudentsDataAsync(dbContext);
                             break;
                         }
-                    case 5:
+                }
+            }
+            while (!endOfWork);
+        }
+
+        public static async Task MarkMenuAsync(ApplicationDbContext dbContext)
+        {
+            bool endOfWork = false;
+            do
+            {
+
+                Console.WriteLine("A rendszer lehetőségei:");
+                int input = ReusableMenu(["Jegy hozzáadása",
+                "Jegy módosítása",
+                "Jegy törlése",
+            ]);
+
+                switch (input)
+                {
+                    case -1:
+                        {
+                            endOfWork = true;
+                            break;
+                        }
+
+                    case 0:
                         {
                             Console.Clear();
                             await MarkFunctions.AddNewMarkAsync(dbContext);
                             break;
                         }
-                    case 6:
+                    case 1:
                         {
                             Console.Clear();
                             await MarkFunctions.ModifyMarkAsync(dbContext);
                             break;
                         }
-                    case 7:
+                    case 2:
                         {
                             Console.Clear();
                             await MarkFunctions.DeleteMarkAsync(dbContext);
                             break;
                         }
-                    case 8:
+                }
+
+            }
+            while (!endOfWork);
+        }
+
+        public static async Task SubjectMenuAsync(ApplicationDbContext dbContext)
+        {
+            bool endOfWork = false;
+            do
+            {
+
+                Console.WriteLine("A rendszer lehetőségei:");
+                int input = ReusableMenu([
+                "Tantárgy törlése",
+                "Tantárgy módosítása",
+            ]);
+
+                switch (input)
+                {
+                    case -1:
                         {
-                            Console.Clear();
-                            await SubjectFunctions.DeleteSubjectsAsync(dbContext);
+                            endOfWork = true;
                             break;
                         }
-                    case 9:
+                    case 0:
+                        {
+                            Console.Clear();
+                            await SubjectFunctions.DeleteSubjectAsync(dbContext);
+                            break;
+                        }
+                    case 1:
                         {
                             Console.Clear();
                             await SubjectFunctions.ModifySubjectNameAsync(dbContext);
                             break;
                         }
-                    case 10:
+                }
+
+            }
+            while (!endOfWork);
+        }
+
+        public static async Task LocationMenuAsync(ApplicationDbContext dbContext)
+        {
+            bool endOfWork = false;
+            do
+            {
+
+                Console.WriteLine("A rendszer lehetőségei:");
+                int input = ReusableMenu([
+                    "Cím törlése",
+                "Cím módosítása",
+                "Utca törlése",
+                "Utca módosítása",
+                "Város módosítása",
+                "Ország módosítása",
+            ]);
+
+                switch (input)
+                {
+                    case -1:
+                        {
+                            endOfWork = true;
+                            break;
+                        }
+
+                    case 0:
                         {
                             Console.Clear();
                             await AddressFunctions.DeleteAddressAsync(dbContext);
                             break;
                         }
-                    case 11:
+                    case 1:
                         {
                             Console.Clear();
                             await AddressFunctions.ModifyAddressAsync(dbContext);
                             break;
                         }
-                    case 12:
+                    case 2:
                         {
                             Console.Clear();
                             await StreetFunctions.DeleteStreetAsync(dbContext);
                             break;
                         }
-                    case 13:
+                    case 3:
                         {
                             Console.Clear();
                             await StreetFunctions.ModifyStreetAsync(dbContext);
                             break;
                         }
-                    case 14:
+                    case 4:
                         {
                             Console.Clear();
                             await CityFunctions.ModifyCityAsync(dbContext);
                             break;
                         }
-                    case 15:
+                    case 5:
                         {
                             Console.Clear();
                             await CountryFunctions.ModifyCountryAsync(dbContext);
@@ -138,6 +259,7 @@
             }
             while (!endOfWork);
         }
+
 
         public static int ReusableMenu<T>(List<T> options)
         {

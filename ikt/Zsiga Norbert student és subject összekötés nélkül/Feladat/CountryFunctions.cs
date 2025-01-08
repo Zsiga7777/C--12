@@ -4,26 +4,32 @@ public static class CountryFunctions
 {
     public static async Task AddCountryAsync(ApplicationDbContext dbContext)
     {
-        string temp = "";
         List<CountryEntity> countries = await dbContext.Countries.ToListAsync();
 
+        string countryName =await ReadCountryNameAsync(countries);
+
+        CountryEntity country = new CountryEntity() { Name = countryName };
+        await dbContext.Countries.AddAsync(country);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public static async Task<string> ReadCountryNameAsync(List<CountryEntity> countries)
+    {
+        string countryName = "";
         do
         {
             Console.Clear();
-            temp = ExtendentConsole.ReadString("Kérem az új ország nevét: ");
-            if (countries.Any(x => x.Name.ToLower() == temp.ToLower()))
+            countryName = ExtendentConsole.ReadString("Kérem az új ország nevét: ");
+            if (countries.Any(x => x.Name.ToLower() == countryName.ToLower()))
             {
                 Console.WriteLine("Ilyen ország már létezik.");
                 await Task.Delay(2000);
             }
 
-        } while (countries.Any(x => x.Name.ToLower() == temp.ToLower()));
+        } while (countries.Any(x => x.Name.ToLower() == countryName.ToLower()));
 
-        CountryEntity country = new CountryEntity() { Name = temp };
-        await dbContext.Countries.AddAsync(country);
-        await dbContext.SaveChangesAsync();
+        return countryName;
     }
-
     public static async Task<uint> GetCountryIdAsync(ApplicationDbContext dbContext)
     {
         List<CountryEntity> countries = await dbContext.Countries.ToListAsync();

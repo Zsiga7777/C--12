@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:viewModel="clr-namespace:Solution.DesktopApp.ViewModels"
+             xmlns:behaviors="clr-namespace:Solution.DesktopApp.Behaviors"
+             xmlns:converters="clr-namespace:Solution.ValidationLibrary.Converters;assembly=Solution.ValidationLibrary"
+             x:DataType="viewModel:MainPageViewModel"
+             x:Class="Solution.DesktopApp.MainPage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:FirstValidationErrorConverter x:Key="FirstValidationErrorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <FlexLayout Direction="Column"
+                HorizontalOptions="CenterAndExpand"
+                VerticalOptions="CenterAndExpand"
+                Margin="50,0,50,0">
+        <Label Text="Új könyv bevitele" HorizontalOptions="Center" Style="{x:StaticResource MainTitle}" />
+
+        <StackLayout>
+            <Label Text="Book ISBN" Style="{x:StaticResource InputTitle}"/>
+            <Entry Text="{Binding Id.Value}">
+                <Entry.Behaviors>
+                    <toolkit:EventToCommandBehavior EventName="TextChanged" Command="{Binding IdValidationCommand}" />
+                </Entry.Behaviors>
+            </Entry>
+            <Label Text="{Binding Id.Errors, Converter={StaticResource FirstValidationErrorConverter}}"
+                   Style="{x:StaticResource ErrorStyle}"/>
+        </StackLayout>
+
+        <StackLayout>
+            <Label Text="Book's writer(s)" Style="{x:StaticResource InputTitle}"/>
+            <Entry Text="{Binding Writers.Value }">
+                <Entry.Behaviors>
+                    <toolkit:EventToCommandBehavior EventName="TextChanged" Command="{Binding WritersValidationCommand}"/>
+                </Entry.Behaviors>
+            </Entry>
+            <Label Text="{Binding Writers.Errors, Converter={StaticResource FirstValidationErrorConverter}}"
+                   Style="{x:StaticResource ErrorStyle}"/>
+        </StackLayout>
+        
+        <StackLayout>
+            <Label Text="Title" Style="{x:StaticResource InputTitle}"/>
+            <Entry Text="{Binding Title.Value}">
+                <Entry.Behaviors>
+                    <toolkit:EventToCommandBehavior EventName="TextChanged" Command="{Binding TitleValidationCommand}"/>
+                </Entry.Behaviors>
+            </Entry>
+            <Label Text="{Binding Title.Errors, Converter={StaticResource FirstValidationErrorConverter}}"
+                   Style="{StaticResource ErrorStyle}"/>
+        </StackLayout>
+        
+        <StackLayout>
+            <Label Text="Release year" Style="{x:StaticResource InputTitle}"/>
+            <Entry Text="{Binding ReleaseYear.Value}">
+                <Entry.Behaviors>
+                    <toolkit:EventToCommandBehavior EventName="TectChanged" Command="{Binding ReleaseYearValidationCommand}"/>
+                </Entry.Behaviors>
+            </Entry>
+            <Label Text="{Binding ReleaseYear.Errors, Converter={StaticResource FirstValidationErrorConverter}}"
+                   Style="{StaticResource ErrorStyle}"/>
+        </StackLayout>
+        
+        <StackLayout>
+            <Label Text="Publisher" Style="{x:StaticResource InputTitle}"/>
+            <Entry Text="{Binding Publisher.Value}">
+                <Entry.Behaviors>
+                    <toolkit:EventToCommandBehavior EventName="TextChanged" Command="{Binding PublisherValidationCommand}"/>
+                </Entry.Behaviors>
+            </Entry>
+            <Label Text="{Binding Publisher.Errors, Converter={StaticResource FirstValidationErrorConverter}}"
+                   Style="{StaticResource ErrorStyle}"/>
+        </StackLayout>
+        <Button Text="Submit" HorizontalOptions="Center" Style="{x:StaticResource ButtonStyle}" Command="{Binding OnSubmitCommand}"/>
+    </FlexLayout>
+
+</ContentPage>

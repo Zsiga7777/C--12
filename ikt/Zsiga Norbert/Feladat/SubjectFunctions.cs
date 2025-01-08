@@ -1,4 +1,6 @@
-﻿namespace Kreta.ConsoleApp;
+﻿using Kreta.Database.Migrations;
+
+namespace Kreta.ConsoleApp;
 
 public static class SubjectFunctions
 {
@@ -108,29 +110,20 @@ public static class SubjectFunctions
     }
     public static async Task<bool> AddNewSubjectAsync(ApplicationDbContext dbContext)
     {
-        string input = null;
-        SubjectEntity subject;
+        List<SubjectEntity> subjects = await dbContext.Subjects.ToListAsync();
+        string subjectName =await ReadSubjectNameAsync(subjects);
+        if (subjectName == "")
+        { 
+            return false;
+        }
+
+        SubjectEntity subject = new SubjectEntity() { Name = subjectName };
 
         Console.Clear();
 
-        do
-        {
-            input = ExtendentConsole.ReadString("Kérem a tantárgy nevét: ").ToLower();
-
-            if (!dbContext.Subjects.Any(x => x.Name == input))
-            {
-                subject = new SubjectEntity() { Name = input };
-                await dbContext.Subjects.AddAsync(subject);
-                await dbContext.SaveChangesAsync();
-                return true;
-            }
-            else
-            {
-                Console.WriteLine("Ilyen tartárgy már létezik.");
-                await Task.Delay(2000);
-            }
-        } while (!(input == "e"));
-        return false;
+        await dbContext.Subjects.AddAsync(subject);
+        await dbContext.SaveChangesAsync();
+        return true;        
     }
     public static async Task<uint> AddSubjectToSpecificStudentAsync(ApplicationDbContext dbContext, ulong studentId)
     {
@@ -234,20 +227,31 @@ public static class SubjectFunctions
             return;
         }
 
-        string newName = "";
-        do
-        {
-            Console.Clear();
-            newName = ExtendentConsole.ReadString("Kérem a tantárgy módosított nevét: ").ToLower();
-            if (subjectNames.Any(x => x == newName))
-            {
-                Console.WriteLine("Ilyen tartárgy már létezik.");
-                await Task.Delay(2000);
-            }
-        } while (subjectNames.Any(x => x == newName));
+        string newName = await ReadSubjectNameAsync(subjects);
 
         subjects[selectedSubjectIndex].Name = newName;
         await dbContext.SaveChangesAsync();
+    }
+
+    public static async Task<string> ReadSubjectNameAsync(List<SubjectEntity> subjects)
+    {
+        string name = "";
+        do
+        {
+            Console.Clear();
+            name = ExtendentConsole.ReadString("Kérem a tantárgy nevét: ").ToLower();
+            if (subjects.Any(x => x.Name == name))
+            {
+                Console.WriteLine("Ilyen tantárgy már létezik.");
+                await Task.Delay(2000);
+            }
+            else if (name == "e")
+            {
+                return "";
+            }
+        } while (subjects.Any(x => x.Name == name));
+
+        return name;
     }
 
 }

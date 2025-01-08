@@ -2,20 +2,20 @@
 
 public static class MarkFunctions
 {
-    private static DateTime minDate = DataService.CreateCustomDate(DateTime.Now.Year, "09-01");
-    private static DateTime maxDate = DataService.CreateCustomDate(DateTime.Now.Year + 1, "06-15");
-    public static async Task<uint> GetMarkIdAsync(ApplicationDbContext dbContext)
+    private static DateTime minDate = DataService.CreateCustomDate((DateTime.Now.Month > 7 ? DateTime.Now.Year : DateTime.Now.Year - 1), "09-01");
+    private static DateTime maxDate = DataService.CreateCustomDate((DateTime.Now.Month < 7 ? DateTime.Now.Year : DateTime.Now.Year + 1), "06-15");
+    public static async Task<uint> GetMarkIdAsync(ApplicationDbContext dbContext, ulong studentId)
     {
-        List<MarkEntity> marks = await dbContext.Marks.Include(x => x.Student).Include(x => x.Subject).ToListAsync();
+        List<MarkEntity> marks = await dbContext.Marks.Where(x => x.StudentId == studentId).ToListAsync();
         List<string> fullmarks = GetMarksWithEveryProperties(marks);
-        
+
         Console.Clear();
 
         int selectedIndex = Menus.ReusableMenu(fullmarks);
 
-        if (selectedIndex == -1) 
-        { 
-            return 0; 
+        if (selectedIndex == -1)
+        {
+            return 0;
         }
 
         return marks[selectedIndex].MarkId;
@@ -54,7 +54,13 @@ public static class MarkFunctions
 
     public static async Task DeleteMarkAsync(ApplicationDbContext dbContext)
     {
-        uint SelectedMarkId = await GetMarkIdAsync(dbContext);
+        ulong studentId = await StudentFunctions.GetStudentIdAsync(dbContext);
+        if (studentId == 0)
+        {
+            return;
+        }
+
+        uint SelectedMarkId = await GetMarkIdAsync(dbContext, studentId);
         if (SelectedMarkId == 0) 
         { 
             return;
@@ -68,7 +74,13 @@ public static class MarkFunctions
 
     public static async Task ModifyMarkAsync(ApplicationDbContext dbContext)
     {
-        uint selectedMarkId = await GetMarkIdAsync(dbContext);
+        ulong studentId = await StudentFunctions.GetStudentIdAsync(dbContext);
+        if (studentId == 0)
+        {
+            return;
+        }
+
+        uint selectedMarkId = await GetMarkIdAsync(dbContext, studentId);
         if (selectedMarkId == 0) 
         { 
             return; 
@@ -123,7 +135,7 @@ public static class MarkFunctions
 
         foreach (MarkEntity mark in marks)
         {
-            temp = $"{mark.Mark}, {mark.Date}, {mark.Subject.Name}, {mark.Student.Name}";
+            temp = $"{mark.Mark}, {mark.Date}, {mark.Subject.Name}";
             result.Add(temp);
         }
         return result;
