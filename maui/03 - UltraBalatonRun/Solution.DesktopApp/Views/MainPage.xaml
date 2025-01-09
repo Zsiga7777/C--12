@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:viewModel="clr-namespace:Solution.DesktopApp.ViewModels"
+             xmlns:behaviors="clr-namespace:Solution.DesktopApp.Behaviors"
+             xmlns:converters="clr-namespace:Solution.ValidationLibrary.Converters;assembly=Solution.ValidationLibrary"
+             x:DataType="viewModel:MainPageViewModel"
+             x:Class="Solution.DesktopApp.MainPage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:FirstValidationErrorConverter x:Key="FirstValidationErrorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <FlexLayout Direction="Column" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Margin="50,0,50,0">
+        <Label Text="Új futás rögzítése" Style="{x:StaticResource MainTitleLabel}"/>
+
+        <StackLayout >
+            <Label Text="Date" Style="{x:StaticResource InputLabelStyle}"/>
+            <DatePicker Date="{Binding Date.Value}" MaximumDate="{Binding MaxDate}" WidthRequest="{Binding DatePickerWidth}"/>
+        </StackLayout>
+
+
+
+    </FlexLayout>
+
+</ContentPage>

@@ -9,7 +9,7 @@ public static class ConfigureDI
 	{
 		builder.Services.AddTransient<MainPageViewModel>();
 
-		builder.Services.AddTransient<IBookService, BookService>();
+        builder.Services.AddTransient<IRunService, RunService>();
 
 		return builder;
 	}

@@ -9,7 +9,7 @@ namespace Solution.Core.Models;
 
 public partial class BookModel
 {
-    public ValidatableObject<ulong> Id { get; set; }
+    public ValidatableObject<ulong?> Id { get; set; }
 
     public ValidatableObject<string> Writers { get; protected set; }
     public ValidatableObject<string> Title { get; protected set; }
@@ -18,7 +18,7 @@ public partial class BookModel
    
     public BookModel() 
     {
-        this.Id = new ValidatableObject<ulong>();
+        this.Id = new ValidatableObject<ulong?>();
         this.Writers = new ValidatableObject<string>();
         this.Title = new ValidatableObject<string>();
         this.ReleaseYear = new ValidatableObject<uint?>();
@@ -40,7 +40,7 @@ public partial class BookModel
     {
         return new BookEntity
         {
-            Id = Id.Value,
+            Id = Id.Value ?? 0,
             Writers = Writers.Value,
             Title = Title.Value,
             ReleaseYear = ReleaseYear.Value ?? 0,
@@ -50,7 +50,7 @@ public partial class BookModel
 
     public void ToEntity(BookEntity entity)
     { 
-        entity.Id = Id.Value;
+        entity.Id = Id.Value ?? 0;
         entity.Writers = Writers.Value;
         entity.Title = Title.Value;
         entity.ReleaseYear = ReleaseYear.Value ?? 0;
@@ -60,11 +60,15 @@ public partial class BookModel
     private void AddValidators()
     {
         this.Writers.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Writer(s) is required field." });
+
         this.Title.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Title is required field." });
+
         this.Publisher.Validations.Add(new IsNotNullOrEmptyRule<string> { ValidationMessage = "Publisher is required field." });
+
         this.ReleaseYear.Validations.Add(new NullableIntegerRule<uint?> { ValidationMessage = "ReleaseYear is required field." });
         this.ReleaseYear.Validations.Add(new MinValueRule<uint?>(1) { ValidationMessage = "Release year can't be less than 1" });
         this.ReleaseYear.Validations.Add(new MaxValueRule<uint?>(DateTime.Now.Year) { ValidationMessage = $"Release year can't be more than {DateTime.Now.Year}" });
-        this.Id.Validations.Add(new IsValidISBNCodeRule<ulong> { ValidationMessage = "Id must be a 11 or 13 character long number."});
+        
+        this.Id.Validations.Add(new IsValidISBNCodeRule<ulong?> { ValidationMessage = "Id must be a 11 or 13 character long number."});
     }
 }

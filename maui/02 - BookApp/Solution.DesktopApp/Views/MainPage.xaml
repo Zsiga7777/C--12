@@ -24,6 +24,7 @@
             <Label Text="Book ISBN" Style="{x:StaticResource InputTitle}"/>
             <Entry Text="{Binding Id.Value}">
                 <Entry.Behaviors>
+                    <behaviors:EntryULongBehavior/>
                     <toolkit:EventToCommandBehavior EventName="TextChanged" Command="{Binding IdValidationCommand}" />
                 </Entry.Behaviors>
             </Entry>
@@ -57,7 +58,8 @@
             <Label Text="Release year" Style="{x:StaticResource InputTitle}"/>
             <Entry Text="{Binding ReleaseYear.Value}">
                 <Entry.Behaviors>
-                    <toolkit:EventToCommandBehavior EventName="TectChanged" Command="{Binding ReleaseYearValidationCommand}"/>
+                    <behaviors:EntryIntegerBehavior />
+                    <toolkit:EventToCommandBehavior EventName="TextChanged" Command="{Binding ReleaseYearValidationCommand}"/>
                 </Entry.Behaviors>
             </Entry>
             <Label Text="{Binding ReleaseYear.Errors, Converter={StaticResource FirstValidationErrorConverter}}"
