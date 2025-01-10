@@ -60,14 +60,14 @@ public partial class RunModel
     }
     private void AddValidators() 
     {
-        this.Distance.Validations.Add(new NullableIntegerRule<double?> { ValidationMessage = "Distance is a required field." });
-        this.Distance.Validations.Add(new MinValueRule<double?>(0) { ValidationMessage = "Distance can't be less than 0." });
+        this.Distance.Validations.Add(new NullableDoubleRule<double?> { ValidationMessage = "Distance is a required field." });
+        this.Distance.Validations.Add(new MinValueDoubleRule<double?>(0) { ValidationMessage = "Distance can't be less than 0." });
 
-        this.AverageSpeed.Validations.Add(new NullableIntegerRule<double?> { ValidationMessage = "Average speed is a required field." });
-        this.AverageSpeed.Validations.Add(new MinValueRule<double?>(0) { ValidationMessage = "Average speed can't be less than 0." });
+        this.AverageSpeed.Validations.Add(new NullableDoubleRule<double?> { ValidationMessage = "Average speed is a required field." });
+        this.AverageSpeed.Validations.Add(new MinValueDoubleRule<double?>(0) { ValidationMessage = "Average speed can't be less than 0." });
 
-        this.BurntCalories.Validations.Add(new NullableIntegerRule<double?> { ValidationMessage = "Burnt calories is a required field." });
-        this.BurntCalories.Validations.Add(new MinValueRule<double?>(0) { ValidationMessage = "Burnt calories can't be less than 0." });
+        this.BurntCalories.Validations.Add(new NullableDoubleRule<double?> { ValidationMessage = "Burnt calories is a required field." });
+        this.BurntCalories.Validations.Add(new MinValueDoubleRule<double?>(0) { ValidationMessage = "Burnt calories can't be less than 0." });
 
         this.RunningTime.Validations.Add(new NullableIntegerRule<uint?> { ValidationMessage = "Running time is a required field." });
         this.RunningTime.Validations.Add(new MinValueRule<uint?>(0) { ValidationMessage = "Running time can't be less than 0." });
