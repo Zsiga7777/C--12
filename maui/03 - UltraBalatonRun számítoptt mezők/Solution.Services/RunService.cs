@@ -11,10 +11,10 @@ public class RunService(AppDbContext dbContext) : IRunService
 {
     public async Task<ErrorOr<RunModel>> CreateAsync(RunModel run)
     {
+
         if (run.Date.Value == null ||
             run.Distance.Value == null ||
-            run.BurntCalories.Value == null ||
-            run.AverageSpeed.Value == null ||
+            run.Weight.Value == null ||
             run.RunningTime.Value == null)
         {
             return Error.Conflict(description: $"All of the fields must be filled.");
@@ -22,8 +22,7 @@ public class RunService(AppDbContext dbContext) : IRunService
 
         var isRunExists = await dbContext.Runs.AnyAsync(x => x.Date == run.Date.Value &&
         x.Distance == run.Distance.Value &&
-        x.BurntCalories == run.BurntCalories.Value &&
-        x.AverageSpeed == run.AverageSpeed.Value &&
+        x.Weight == run.Weight.Value &&
         x.RunningTime == run.RunningTime.Value);
 
         if (isRunExists)

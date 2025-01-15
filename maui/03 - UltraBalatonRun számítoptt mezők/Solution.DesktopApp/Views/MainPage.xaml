@@ -35,30 +35,6 @@
         </StackLayout>
         
         <StackLayout>
-            <Label Text="Average speed" Style="{x:StaticResource InputLabelStyle}"/>
-            <Entry Text="{Binding AverageSpeed.Value}">
-                <Entry.Behaviors>
-                    <behaviors:EntryDoubleBehavior/>
-                    <toolkit:EventToCommandBehavior EventName="TextChanged" Command="{Binding AverageSpeedValidationCommand}"/>
-                </Entry.Behaviors>
-            </Entry>
-            <Label Text="{Binding AverageSpeed.Errors, Converter={StaticResource FirstValidationErrorConverter}}"
-           Style="{StaticResource ErrorLabelStyle}"/>
-        </StackLayout>
-        
-        <StackLayout>
-            <Label Text="Burnt calories" Style="{x:StaticResource InputLabelStyle}"/>
-            <Entry Text="{Binding BurntCalories.Value}">
-                <Entry.Behaviors>
-                    <behaviors:EntryDoubleBehavior/>
-                    <toolkit:EventToCommandBehavior EventName="TextChanged" Command="{Binding BurntCaloriesValidationCommand}"/>
-                </Entry.Behaviors>
-            </Entry>
-            <Label Text="{Binding BurntCalories.Errors, Converter={StaticResource FirstValidationErrorConverter}}"
-           Style="{StaticResource ErrorLabelStyle}"/>
-        </StackLayout>
-        
-        <StackLayout>
             <Label Text="Running time" Style="{x:StaticResource InputLabelStyle}"/>
             <Entry Text="{Binding RunningTime.Value}">
                 <Entry.Behaviors>
@@ -68,6 +44,18 @@
             </Entry>
             <Label Text="{Binding RunningTime.Errors, Converter={StaticResource FirstValidationErrorConverter}}"
            Style="{StaticResource ErrorLabelStyle}"/>
+        </StackLayout>
+        
+        <StackLayout>
+            <Label Text="Weight" Style="{x:StaticResource InputLabelStyle}"/>
+            <Entry Text="{Binding Weight.Value}">
+                <Entry.Behaviors>
+                    <behaviors:EntryDoubleBehavior/>
+                    <toolkit:EventToCommandBehavior EventName="TextChanged" Command="{Binding WeightValidationCommand}"/>
+                </Entry.Behaviors>
+            </Entry>
+            <Label Text="{Binding Weight.Errors, Converter={StaticResource FirstValidationErrorConverter}}"
+   Style="{StaticResource ErrorLabelStyle}"/>
         </StackLayout>
         <Button Text="Submit" Style="{x:StaticResource ButtonStyle}" Command="{Binding OnSubmitCommand}"/>
 

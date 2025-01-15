@@ -69,6 +69,6 @@ public partial class BookModel
         this.ReleaseYear.Validations.Add(new MinValueRule<uint?>(1) { ValidationMessage = "Release year can't be less than 1" });
         this.ReleaseYear.Validations.Add(new MaxValueRule<uint?>(DateTime.Now.Year) { ValidationMessage = $"Release year can't be more than {DateTime.Now.Year}" });
         
-        this.Id.Validations.Add(new IsValidISBNCodeRule<ulong?> { ValidationMessage = "Id must be a 11 or 13 character long number."});
+        this.Id.Validations.Add(new IsValidISBNCodeRule<ulong?> { ValidationMessage = "Id must be a 10 or 13 character long number."});
     }
 }

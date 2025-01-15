@@ -12,7 +12,7 @@
     </Style>
 
     <Style x:Key="InputTitle" TargetType="Label">
-        <Setter Property="TextColor" Value="DarkGray"/>
+        <Setter Property="TextColor" Value="Gray"/>
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="FontAttributes" Value="Italic"/>
     </Style>

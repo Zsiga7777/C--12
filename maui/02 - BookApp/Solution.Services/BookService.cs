@@ -13,6 +13,15 @@ public class BookService(AppDbContext dbContext) : IBookService
     {
         var books = await dbContext.Books.ToListAsync();
 
+        if (book.Id.Value == null ||
+            book.Publisher.Value == null ||
+            book.Writers.Value == null ||
+            book.Title.Value == null ||
+            book.ReleaseYear.Value == null)
+        {
+            return Error.Conflict(description: $"You must fill all of the fields.");
+        }
+
         if (books.Any(x => x.Writers == book.Writers.Value
        && x.Publisher == book.Publisher.Value
        && x.Title == book.Title.Value
