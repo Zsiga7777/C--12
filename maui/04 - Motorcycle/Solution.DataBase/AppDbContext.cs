@@ -1,8 +1,13 @@
-﻿namespace Solution.DataBase;
+﻿using Solution.Database.Entities;
+
+namespace Solution.DataBase;
 
 public class AppDbContext() : DbContext
 {
-	private static string connectionString = string.Empty;
+	public	DbSet<ManufacturerEntity> Manufacturers { get; set; }
+    public DbSet<MotorcycleEntity> Motorcycles { get; set; }
+
+    private static string connectionString = string.Empty;
 
 	static AppDbContext()
 	{
@@ -26,13 +31,13 @@ public class AppDbContext() : DbContext
         var file = "connectionString.Production.json";
 #endif
 
-		var stream = new MemoryStream(File.ReadAllBytes($"{file}"));
+		var stream =new MemoryStream(File.ReadAllBytes($"{file}"));
 
 		var config = new ConfigurationBuilder()
 					.AddJsonStream(stream)
 					.Build();
 
-		var connectionString = config.GetValue<string>("SqlConnectionString");
-		return connectionString;
+		var connectionStirng = config.GetValue<string>("SqlConnectionString");
+		return connectionStirng;
 	}
 }
