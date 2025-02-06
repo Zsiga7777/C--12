@@ -1,3 +1,0 @@
-{
-  "SqlConnectionString": "Data Source=(LocalDB)\\MSSQLLocalDB;Database=MotorDB;Trusted_Connection=True;MultipleActiveResultSets=True;TrustServerCertificate=True;"
-}
