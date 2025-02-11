@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <Style x:Key="PageTitle" TargetType="Label">
+        <Setter Property="TextColor" Value="Blue" />
+        <Setter Property="FontSize" Value="22"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="HorizontalOptions" Value="Center"/>
+    </Style>
+
+    <Style x:Key="ValidationErrorLabelStyle" TargetType="Label">
+        <Setter Property="TextColor" Value="Red"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+    </Style>
+
+    <Style x:Key="InputLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontAttributes" Value="Italic" />
+        <Setter Property="TextColor" Value="Black" />
+       
+    </Style>
+    
+    <Style x:Key="ListLabel" TargetType="Label">
+        <Setter Property="HorizontalTextAlignment" Value="Center"/>
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light=WhiteSmoke, Dark=Black}"/>
+        <Setter Property="FontSize" Value="20"/>
+    </Style>
+
+    <Style x:Key="ButtonStyle" TargetType="Button" >
+        <Setter Property="BackgroundColor" Value="blue"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="TextColor" Value="Yellow"/>
+        <Setter Property="HorizontalOptions" Value="Center"/>
+        <Setter Property="MinimumWidthRequest" Value="100"/>
+    </Style>
+
+    <Style x:Key="BorderStyle" TargetType="Border" >
+        <Setter Property="StrokeThickness" Value="2"/>
+        <Setter Property="Stroke" Value="Black"/>
+        <Setter Property="Padding" Value="10"/>
+    </Style>
+
+
+    <Style x:Key="FormLineContainer" TargetType="VerticalStackLayout">
+        <Setter Property="WidthRequest" Value="600"/>
+        <Setter Property="HorizontalOptions" Value="Center"/>
+    </Style>
+
+
+</ResourceDictionary>

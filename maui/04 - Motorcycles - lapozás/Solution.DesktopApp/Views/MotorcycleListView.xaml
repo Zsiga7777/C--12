@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:viewModels="clr-namespace:Solution.DesktopApp.ViewModels"
+             xmlns:models="clr-namespace:Solution.Core.Models;assembly=Solution.Core"
+             xmlns:components="clr-namespace:Solution.DesktopApp.Components"
+             x:Class="Solution.DesktopApp.Views.MotorcycleListView"
+             x:DataType="viewModels:MotorcycleListViewModel">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior Command="{Binding AppearingCommand}" EventName="Appearing"/>
+        <toolkit:EventToCommandBehavior Command="{Binding DisappearingCommand}" EventName="Disappearing" />
+    </ContentPage.Behaviors>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" Text=" MOTORCYCLES" Style="{x:StaticResource PageTitle}"/>
+
+        <ScrollView Grid.Row="1">
+            <CollectionView ItemsSource="{Binding Motorcycles}" Margin="50,0,50,0">
+                <CollectionView.Header>
+                   
+
+                    <Grid BackgroundColor="{AppThemeBinding Light=Black, Dark=Whitesmoke}" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4*"/>
+                            <ColumnDefinition Width="4*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="100"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" Style="{x:StaticResource BorderStyle}">
+                            <Label  Text="Manufacturer" Style="{x:StaticResource ListLabel}" />
+                        </Border>
+                        <Border Grid.Column="1"  Style="{x:StaticResource BorderStyle}">
+                            <Label  Text="Model" Style="{x:StaticResource ListLabel}"/>
+                        </Border>
+                        <Border Grid.Column="2"  Style="{x:StaticResource BorderStyle}">
+                            <Label  Text="Releas year" Style="{x:StaticResource ListLabel}"/>
+                        </Border>
+                        <Border Grid.Column="3"  Style="{x:StaticResource BorderStyle}">
+                            <Label Text="Cubic" Style="{x:StaticResource ListLabel}"/>
+                        </Border>
+                        <Border Grid.Column="4"  Style="{x:StaticResource BorderStyle}">
+                            <Label Text="Number of cylinders" Style="{x:StaticResource ListLabel}"/>
+                        </Border>
+                    </Grid>
+
+                </CollectionView.Header>
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="5"/>
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:MotorcycleModel">
+                        <components:MotorcycleListComponent Motorcycle="{Binding .}"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                
+            </CollectionView>
+        </ScrollView>
+
+        <ImageButton Source="back.png"
+             Command="{Binding LoadPreviousPageCommand}"
+             HorizontalOptions="Start"
+             Grid.Row="2"
+             Margin="50,20,0,0"
+            />
+        
+        <ImageButton Source="forward.png"
+             Command="{Binding LoadNextPageCommand}"
+             HorizontalOptions="End"
+             Grid.Row="2"
+             Margin="0,20,50,0"/>
+
+    </Grid>
+</ContentPage>
